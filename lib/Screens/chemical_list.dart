@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/Screens/new_chemical.dart';
 import '../Widgets/chemlist/single_chemical_card.dart';
 import '../Models/Chemicals/temp_chem_list.dart';
 
@@ -19,6 +20,10 @@ class _ChemicalListState extends State<ChemicalList> {
               element.name.startsWith(RegExp(text, caseSensitive: false)))
           .toList();
     });
+  }
+
+  void newChemical(BuildContext ctx) {
+    Navigator.pushNamed(ctx, NewChemical.routeName);
   }
 
   @override
@@ -50,46 +55,86 @@ class _ChemicalListState extends State<ChemicalList> {
                     SingleChemicalCard(tempList, index),
               ),
             ),
-//Floating button for adding new elements
-            FloatingActionButton(
-              onPressed: () => {},
-              child: const Icon(Icons.add),
-            ),
-//Bottom bar for search and scan
-            Container(
-              height: (deviceHeight - appBarHeight) * 0.2,
-              padding: EdgeInsets.symmetric(horizontal: deviceWidth * 0.05),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-//Search
-                  Container(
-                    width: deviceWidth * 0.45,
-                    padding: const EdgeInsets.all(1),
-                    child: TextField(
-                      onChanged: (text) => searchText(text),
-                      textAlign: TextAlign.center,
-                      decoration: const InputDecoration(hintText: "Search"),
-                    ),
-                  ),
 
-//Scan
-                  Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(15),
-                      border: Border.all(color: Colors.pink),
-                    ),
-                    padding: const EdgeInsets.all(12),
-                    child: InkWell(
-                      customBorder: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(15)),
-                      onTap: (() {}),
-                      child: Text('Scan',
-                          style: Theme.of(context).textTheme.headline6),
-                    ),
+//Bottom bar for search and scan with Floating button for adding new elements
+            Stack(
+              alignment: Alignment.topCenter,
+              children: [
+                FloatingActionButton(
+                  splashColor: Colors.black54,
+                  elevation: 10,
+                  onPressed: () => newChemical(context),
+                  child: const Icon(Icons.add),
+                ),
+                SizedBox(
+                  height: (deviceHeight - appBarHeight) * 0.2,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      //Search
+                      Expanded(
+                        flex: 3,
+                        child: Container(
+                          margin: EdgeInsets.symmetric(
+                              horizontal: deviceWidth * 0.1),
+                          padding: const EdgeInsets.all(3),
+                          decoration: BoxDecoration(
+                            boxShadow: const [
+                              BoxShadow(
+                                  offset: Offset(4, 4),
+                                  color: Colors.black26,
+                                  blurRadius: 5)
+                            ],
+                            color: Colors.pink,
+                            borderRadius: BorderRadius.circular(15),
+                            border: Border.all(color: Colors.pink),
+                          ),
+                          child: TextField(
+                            onChanged: (text) => searchText(text),
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(
+                                color: Colors.white, fontSize: 20),
+                            decoration: const InputDecoration(
+                              hintText: "Search",
+                              hintStyle:
+                                  TextStyle(color: Colors.white, fontSize: 20),
+                              border: InputBorder.none,
+                            ),
+                          ),
+                        ),
+                      ),
+
+                      //Scan
+                      Expanded(
+                        flex: 3,
+                        child: Container(
+                            margin: EdgeInsets.symmetric(
+                                horizontal: deviceWidth * 0.1),
+                            child: TextButton(
+                              style: ButtonStyle(
+                                elevation: MaterialStateProperty.all(5),
+                                padding: MaterialStateProperty.all(
+                                    const EdgeInsets.all(19)),
+                                backgroundColor:
+                                    MaterialStateProperty.all(Colors.pink),
+                                shape: MaterialStateProperty.all(
+                                  RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(15),
+                                  ),
+                                ),
+                              ),
+                              child: const Text(
+                                "Scan",
+                                style: TextStyle(
+                                    fontSize: 20, color: Colors.white),
+                              ),
+                              onPressed: () => {},
+                            )),
+                      ),
+                    ],
                   ),
-                ],
-              ),
+                ),
+              ],
             )
           ],
         ),
