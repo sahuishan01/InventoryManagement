@@ -1,9 +1,9 @@
 class ChemModel {
-  final String id;
-  final String name;
-  final String formula;
-  final double molWeight;
-  final String description;
+  String id;
+  String name;
+  String formula;
+  double molWeight;
+  String description;
   ChemModel(
       {required this.id,
       required this.name,

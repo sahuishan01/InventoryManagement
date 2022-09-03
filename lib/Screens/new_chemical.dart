@@ -1,4 +1,5 @@
 import 'package:flutter_application_1/Models/Chemicals/temp_chem_list.dart';
+import 'package:flutter_application_1/Screens/chemical_list.dart';
 import 'package:uuid/uuid.dart';
 import 'package:flutter/material.dart';
 import '../Models/Chemicals/temp_chem_model.dart';
@@ -17,13 +18,20 @@ class _NewChemicalState extends State<NewChemical> {
   final _form = GlobalKey<FormState>();
   var uuid = const Uuid();
 
-  String _name = '';
-  String _formula = '';
-  String _description = '';
-  double _molWeight = 0;
+  ChemModel _tempChemical =
+      ChemModel(id: '', name: '', formula: '', description: '', molWeight: 0);
+
+  var _initValues = {
+    'name': '',
+    'id': '',
+    'formula': '',
+    'description': '',
+    'molWeight': 0,
+  };
   @override
   void dispose() {
     _descriptionFocus.dispose();
+
     super.dispose();
   }
 
@@ -32,17 +40,40 @@ class _NewChemicalState extends State<NewChemical> {
     if (!isValid) {
       return;
     }
-    String id = uuid.v1();
 
     _form.currentState!.save();
-    final newChemical = ChemModel(
-        id: id,
-        name: _name,
-        formula: _formula,
-        molWeight: _molWeight,
-        description: _description);
-    chemicalList.add(newChemical);
+    if (_tempChemical.id.isEmpty) {
+      String id = uuid.v1();
+      _tempChemical.id = id;
+      ChemList.chemicalList.add(_tempChemical);
+    } else {
+      final updateIndex = ChemList.chemicalList
+          .indexWhere((element) => element.id == _tempChemical.id);
+      ChemList.chemicalList[updateIndex] = _tempChemical;
+    }
+
     Navigator.pushReplacementNamed(context, '/');
+  }
+
+  var _isInit = true;
+  @override
+  void didChangeDependencies() {
+    if (_isInit) {
+      final chemicalId =
+          ModalRoute.of(context)!.settings.arguments as List<String>;
+
+      _tempChemical = ChemList.chemicalList
+          .firstWhere((element) => element.id == chemicalId[0]);
+      _initValues = {
+        'name': _tempChemical.name,
+        'id': _tempChemical.id,
+        'formula': _tempChemical.formula,
+        'description': _tempChemical.description,
+        'molWeight': _tempChemical.molWeight.toString(),
+      };
+    }
+    _isInit = false;
+    super.didChangeDependencies();
   }
 
   @override
@@ -79,8 +110,14 @@ class _NewChemicalState extends State<NewChemical> {
                   height: 20,
                 ),
                 TextFormField(
-                  onSaved: (value) =>
-                      value!.isNotEmpty ? _name = value : _name = _name,
+                  initialValue: _initValues['name'].toString(),
+                  onSaved: (value) => {
+                    if (value != null && value.isNotEmpty)
+                      {
+                        _tempChemical.name = value,
+                        _tempChemical.id = _initValues['id'].toString(),
+                      }
+                  },
                   validator: (value) => value!.isEmpty
                       ? "Please enter the name of chemical"
                       : null,
@@ -96,10 +133,14 @@ class _NewChemicalState extends State<NewChemical> {
                   height: 20,
                 ),
                 TextFormField(
-                  onSaved: (value) => value!.isNotEmpty
-                      ? _description = value
-                      : _description = _description,
-                  textAlign: TextAlign.center,
+                  initialValue: _initValues['description'].toString(),
+                  onSaved: (value) => {
+                    if (value != null && value.isNotEmpty)
+                      {
+                        _tempChemical.description = value,
+                        _tempChemical.id = _initValues['id'].toString(),
+                      }
+                  },
                   validator: (value) => value!.isEmpty
                       ? "Please enter the description of chemical"
                       : null,
@@ -115,9 +156,14 @@ class _NewChemicalState extends State<NewChemical> {
                   height: 20,
                 ),
                 TextFormField(
-                  onSaved: (value) => value!.isNotEmpty
-                      ? _formula = value
-                      : _formula = _formula,
+                  initialValue: _initValues['formula'].toString(),
+                  onSaved: (value) => {
+                    if (value != null && value.isNotEmpty)
+                      {
+                        _tempChemical.formula = value,
+                        _tempChemical.id = _initValues['id'].toString(),
+                      }
+                  },
                   textAlign: TextAlign.center,
                   validator: (value) => value!.isEmpty
                       ? "Please enter the formula of chemical"
@@ -134,9 +180,14 @@ class _NewChemicalState extends State<NewChemical> {
                   height: 20,
                 ),
                 TextFormField(
-                  onSaved: (value) => value!.isNotEmpty
-                      ? _molWeight = double.parse(value)
-                      : _molWeight = _molWeight,
+                  initialValue: _initValues['molWeight'].toString(),
+                  onSaved: (value) => {
+                    if (value != null && value.isNotEmpty)
+                      {
+                        _tempChemical.molWeight = double.parse(value),
+                        _tempChemical.id = _initValues['id'].toString(),
+                      }
+                  },
                   textAlign: TextAlign.center,
                   validator: (value) {
                     if (value == null || value.isEmpty) {

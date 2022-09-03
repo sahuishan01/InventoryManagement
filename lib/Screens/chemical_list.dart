@@ -11,11 +11,11 @@ class ChemicalList extends StatefulWidget {
 }
 
 class _ChemicalListState extends State<ChemicalList> {
-  List tempList = [...chemicalList];
+  List tempList = ChemList.chemicalList;
 
   void searchText(text) {
     setState(() {
-      tempList = chemicalList
+      tempList = ChemList.chemicalList
           .where((element) =>
               element.name.startsWith(RegExp(text, caseSensitive: false)))
           .toList();
