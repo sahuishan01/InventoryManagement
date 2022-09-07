@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/Screens/new_chemical.dart';
+import '../Models/Chemicals/temp_chem_model.dart';
+import './new_chemical.dart';
 import '../Widgets/chemlist/single_chemical_card.dart';
 import '../Models/Chemicals/temp_chem_list.dart';
+import 'package:provider/provider.dart';
 
 class ChemicalList extends StatefulWidget {
   const ChemicalList({Key? key}) : super(key: key);
@@ -11,19 +13,25 @@ class ChemicalList extends StatefulWidget {
 }
 
 class _ChemicalListState extends State<ChemicalList> {
-  List tempList = ChemList.chemicalList;
-
-  void searchText(text) {
-    setState(() {
-      tempList = ChemList.chemicalList
-          .where((element) =>
-              element.name.startsWith(RegExp(text, caseSensitive: false)))
-          .toList();
-    });
+  void newChemical(BuildContext ctx) {
+    Navigator.of(ctx).pushNamed(NewChemical.routeName);
   }
 
-  void newChemical(BuildContext ctx) {
-    Navigator.pushNamed(ctx, NewChemical.routeName);
+  List<ChemModel> tempList = [];
+  @override
+  void didChangeDependencies() {
+    tempList = Provider.of<ChemList>(context, listen: true).elements;
+
+    super.didChangeDependencies();
+  }
+
+  void searchText(text) {
+    setState(
+      () {
+        tempList =
+            Provider.of<ChemList>(context, listen: false).findByName(text);
+      },
+    );
   }
 
   @override
@@ -51,8 +59,10 @@ class _ChemicalListState extends State<ChemicalList> {
               child: ListView.builder(
                 padding: EdgeInsets.symmetric(vertical: deviceHeight * 0.02),
                 itemCount: tempList.length,
-                itemBuilder: (ctx, index) =>
-                    SingleChemicalCard(tempList, index),
+                itemBuilder: (ctx, index) => ChangeNotifierProvider.value(
+                  value: tempList[index],
+                  child: const SingleChemicalCard(),
+                ),
               ),
             ),
 

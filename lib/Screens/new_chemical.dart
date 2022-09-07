@@ -1,8 +1,8 @@
-import 'package:flutter_application_1/Models/Chemicals/temp_chem_list.dart';
-import 'package:flutter_application_1/Screens/chemical_list.dart';
+import '../Models/Chemicals/temp_chem_list.dart';
 import 'package:uuid/uuid.dart';
 import 'package:flutter/material.dart';
 import '../Models/Chemicals/temp_chem_model.dart';
+import 'package:provider/provider.dart';
 
 class NewChemical extends StatefulWidget {
   static const routeName = "/new-element";
@@ -31,6 +31,8 @@ class _NewChemicalState extends State<NewChemical> {
   @override
   void dispose() {
     _descriptionFocus.dispose();
+    _molWeightFocus.dispose();
+    _formulaFocus.dispose();
 
     super.dispose();
   }
@@ -45,32 +47,34 @@ class _NewChemicalState extends State<NewChemical> {
     if (_tempChemical.id.isEmpty) {
       String id = uuid.v1();
       _tempChemical.id = id;
-      ChemList.chemicalList.add(_tempChemical);
+      Provider.of<ChemList>(context, listen: false).addElement(_tempChemical);
     } else {
-      final updateIndex = ChemList.chemicalList
-          .indexWhere((element) => element.id == _tempChemical.id);
-      ChemList.chemicalList[updateIndex] = _tempChemical;
+      Provider.of<ChemList>(context, listen: false)
+          .updateElement(_tempChemical, _tempChemical.id);
     }
 
     Navigator.pushReplacementNamed(context, '/');
   }
 
   var _isInit = true;
+
   @override
   void didChangeDependencies() {
     if (_isInit) {
-      final chemicalId =
-          ModalRoute.of(context)!.settings.arguments as List<String>;
+      if (ModalRoute.of(context)!.settings.arguments != null) {
+        final chemicalId =
+            ModalRoute.of(context)!.settings.arguments as List<String>;
 
-      _tempChemical = ChemList.chemicalList
-          .firstWhere((element) => element.id == chemicalId[0]);
-      _initValues = {
-        'name': _tempChemical.name,
-        'id': _tempChemical.id,
-        'formula': _tempChemical.formula,
-        'description': _tempChemical.description,
-        'molWeight': _tempChemical.molWeight.toString(),
-      };
+        _tempChemical = Provider.of<ChemList>(context, listen: false)
+            .findById(chemicalId[0]);
+        _initValues = {
+          'name': _tempChemical.name,
+          'id': _tempChemical.id,
+          'formula': _tempChemical.formula,
+          'description': _tempChemical.description,
+          'molWeight': _tempChemical.molWeight.toString(),
+        };
+      }
     }
     _isInit = false;
     super.didChangeDependencies();
@@ -147,6 +151,7 @@ class _NewChemicalState extends State<NewChemical> {
                   decoration: const InputDecoration(
                     labelText: "Description",
                   ),
+                  textAlign: TextAlign.center,
                   textInputAction: TextInputAction.next,
                   focusNode: _descriptionFocus,
                   onFieldSubmitted: (_) =>

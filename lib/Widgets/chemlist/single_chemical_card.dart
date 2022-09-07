@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
-
+import 'package:flutter_application_1/Models/Chemicals/temp_chem_model.dart';
+import 'package:provider/provider.dart';
 import '../../Screens/single_chemical.dart';
 
 class SingleChemicalCard extends StatelessWidget {
-  final int index;
-  final List tempList;
-  const SingleChemicalCard(this.tempList, this.index, {Key? key})
-      : super(key: key);
+  const SingleChemicalCard({Key? key}) : super(key: key);
 
   void selectedElement(BuildContext ctx, id) {
     Navigator.pushNamed(ctx, SingleChemical.routeName,
@@ -17,6 +15,7 @@ class SingleChemicalCard extends StatelessWidget {
   Widget build(BuildContext context) {
     double deviceHeight = MediaQuery.of(context).size.height;
     double deviceWidth = MediaQuery.of(context).size.width;
+    final chemElement = Provider.of<ChemModel>(context, listen: false);
 
     return Card(
       elevation: 2,
@@ -32,7 +31,7 @@ class SingleChemicalCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  tempList[index].name,
+                  chemElement.name,
                 ),
                 const SizedBox(height: 8),
                 SizedBox(
@@ -41,9 +40,9 @@ class SingleChemicalCard extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        tempList[index].formula,
+                        chemElement.formula,
                       ),
-                      Text(tempList[index].molWeight.toString()),
+                      Text(chemElement.molWeight.toString()),
                     ],
                   ),
                 )
@@ -54,7 +53,7 @@ class SingleChemicalCard extends StatelessWidget {
             padding: EdgeInsets.symmetric(horizontal: deviceWidth * 0.03),
             child: TextButton(
               child: const Text("View Chemical"),
-              onPressed: () => selectedElement(context, tempList[index].id),
+              onPressed: () => selectedElement(context, chemElement.id),
             ),
           ),
         ],
