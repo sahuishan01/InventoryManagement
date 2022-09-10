@@ -1,5 +1,7 @@
+import 'package:fluttertoast/fluttertoast.dart';
+
 import '../Models/Chemicals/temp_chem_list.dart';
-import 'package:uuid/uuid.dart';
+
 import 'package:flutter/material.dart';
 import '../Models/Chemicals/temp_chem_model.dart';
 import 'package:provider/provider.dart';
@@ -16,8 +18,8 @@ class _NewChemicalState extends State<NewChemical> {
   final _molWeightFocus = FocusNode();
   final _formulaFocus = FocusNode();
   final _form = GlobalKey<FormState>();
-  var uuid = const Uuid();
 
+  var _isLoading = false;
   ChemModel _tempChemical =
       ChemModel(id: '', name: '', formula: '', description: '', molWeight: 0);
 
@@ -37,23 +39,37 @@ class _NewChemicalState extends State<NewChemical> {
     super.dispose();
   }
 
-  void _saveForm() {
+  void _saveForm() async {
     final isValid = _form.currentState!.validate();
     if (!isValid) {
       return;
     }
 
     _form.currentState!.save();
+    setState(() {
+      _isLoading = true;
+    });
     if (_tempChemical.id.isEmpty) {
-      String id = uuid.v1();
-      _tempChemical.id = id;
-      Provider.of<ChemList>(context, listen: false).addElement(_tempChemical);
+      try {
+        await Provider.of<ChemList>(context, listen: false)
+            .addElement(_tempChemical);
+        setState(() {
+          _isLoading = false;
+        });
+      } catch (err) {
+        (err) => Fluttertoast.showToast(
+            msg: err,
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.BOTTOM);
+      }
     } else {
       Provider.of<ChemList>(context, listen: false)
           .updateElement(_tempChemical, _tempChemical.id);
+      setState(() {
+        _isLoading = false;
+      });
     }
-
-    Navigator.pushReplacementNamed(context, '/');
+    Navigator.of(context).pop();
   }
 
   var _isInit = true;
@@ -100,126 +116,131 @@ class _NewChemicalState extends State<NewChemical> {
 
     return Scaffold(
       appBar: appBar,
-      body: Form(
-        key: _form,
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: EdgeInsets.symmetric(
-                vertical: deviceHeight * 0.07, horizontal: deviceWidth * 0.05),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                const Text('Hello this is new chemical addition form'),
-                const SizedBox(
-                  height: 20,
-                ),
-                TextFormField(
-                  initialValue: _initValues['name'].toString(),
-                  onSaved: (value) => {
-                    if (value != null && value.isNotEmpty)
-                      {
-                        _tempChemical.name = value,
-                        _tempChemical.id = _initValues['id'].toString(),
-                      }
-                  },
-                  validator: (value) => value!.isEmpty
-                      ? "Please enter the name of chemical"
-                      : null,
-                  textAlign: TextAlign.center,
-                  decoration: const InputDecoration(
-                    labelText: "Chemical Name",
+      body: _isLoading
+          ? const Center(
+              child: CircularProgressIndicator(),
+            )
+          : Form(
+              key: _form,
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: EdgeInsets.symmetric(
+                      vertical: deviceHeight * 0.07,
+                      horizontal: deviceWidth * 0.05),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      const Text('Hello this is new chemical addition form'),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      TextFormField(
+                        initialValue: _initValues['name'].toString(),
+                        onSaved: (value) => {
+                          if (value != null && value.isNotEmpty)
+                            {
+                              _tempChemical.name = value,
+                              _tempChemical.id = _initValues['id'].toString(),
+                            }
+                        },
+                        validator: (value) => value!.isEmpty
+                            ? "Please enter the name of chemical"
+                            : null,
+                        textAlign: TextAlign.center,
+                        decoration: const InputDecoration(
+                          labelText: "Chemical Name",
+                        ),
+                        textInputAction: TextInputAction.next,
+                        onFieldSubmitted: (_) =>
+                            Focus.of(context).requestFocus(_descriptionFocus),
+                      ),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      TextFormField(
+                        initialValue: _initValues['description'].toString(),
+                        onSaved: (value) => {
+                          if (value != null && value.isNotEmpty)
+                            {
+                              _tempChemical.description = value,
+                              _tempChemical.id = _initValues['id'].toString(),
+                            }
+                        },
+                        validator: (value) => value!.isEmpty
+                            ? "Please enter the description of chemical"
+                            : null,
+                        decoration: const InputDecoration(
+                          labelText: "Description",
+                        ),
+                        textAlign: TextAlign.center,
+                        textInputAction: TextInputAction.next,
+                        focusNode: _descriptionFocus,
+                        onFieldSubmitted: (_) =>
+                            Focus.of(context).requestFocus(_formulaFocus),
+                      ),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      TextFormField(
+                        initialValue: _initValues['formula'].toString(),
+                        onSaved: (value) => {
+                          if (value != null && value.isNotEmpty)
+                            {
+                              _tempChemical.formula = value,
+                              _tempChemical.id = _initValues['id'].toString(),
+                            }
+                        },
+                        textAlign: TextAlign.center,
+                        validator: (value) => value!.isEmpty
+                            ? "Please enter the formula of chemical"
+                            : null,
+                        decoration: const InputDecoration(
+                          labelText: "Formula",
+                        ),
+                        textInputAction: TextInputAction.next,
+                        focusNode: _formulaFocus,
+                        onFieldSubmitted: (_) =>
+                            Focus.of(context).requestFocus(_molWeightFocus),
+                      ),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      TextFormField(
+                        initialValue: _initValues['molWeight'].toString(),
+                        onSaved: (value) => {
+                          if (value != null && value.isNotEmpty)
+                            {
+                              _tempChemical.molWeight = double.parse(value),
+                              _tempChemical.id = _initValues['id'].toString(),
+                            }
+                        },
+                        textAlign: TextAlign.center,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return "Enter weight";
+                          } else if (double.tryParse(value) == null) {
+                            return "Enter weight in number format";
+                          } else if (double.parse(value) <= 0) {
+                            return "Weight has to be greater than 0";
+                          }
+                          return null;
+                        },
+                        decoration: const InputDecoration(
+                          labelText: "Molecular Weight",
+                        ),
+                        keyboardType: TextInputType.number,
+                        textInputAction: TextInputAction.done,
+                        focusNode: _molWeightFocus,
+                        onFieldSubmitted: (_) => _saveForm(),
+                      ),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                    ],
                   ),
-                  textInputAction: TextInputAction.next,
-                  onFieldSubmitted: (_) =>
-                      Focus.of(context).requestFocus(_descriptionFocus),
                 ),
-                const SizedBox(
-                  height: 20,
-                ),
-                TextFormField(
-                  initialValue: _initValues['description'].toString(),
-                  onSaved: (value) => {
-                    if (value != null && value.isNotEmpty)
-                      {
-                        _tempChemical.description = value,
-                        _tempChemical.id = _initValues['id'].toString(),
-                      }
-                  },
-                  validator: (value) => value!.isEmpty
-                      ? "Please enter the description of chemical"
-                      : null,
-                  decoration: const InputDecoration(
-                    labelText: "Description",
-                  ),
-                  textAlign: TextAlign.center,
-                  textInputAction: TextInputAction.next,
-                  focusNode: _descriptionFocus,
-                  onFieldSubmitted: (_) =>
-                      Focus.of(context).requestFocus(_formulaFocus),
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-                TextFormField(
-                  initialValue: _initValues['formula'].toString(),
-                  onSaved: (value) => {
-                    if (value != null && value.isNotEmpty)
-                      {
-                        _tempChemical.formula = value,
-                        _tempChemical.id = _initValues['id'].toString(),
-                      }
-                  },
-                  textAlign: TextAlign.center,
-                  validator: (value) => value!.isEmpty
-                      ? "Please enter the formula of chemical"
-                      : null,
-                  decoration: const InputDecoration(
-                    labelText: "Formula",
-                  ),
-                  textInputAction: TextInputAction.next,
-                  focusNode: _formulaFocus,
-                  onFieldSubmitted: (_) =>
-                      Focus.of(context).requestFocus(_molWeightFocus),
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-                TextFormField(
-                  initialValue: _initValues['molWeight'].toString(),
-                  onSaved: (value) => {
-                    if (value != null && value.isNotEmpty)
-                      {
-                        _tempChemical.molWeight = double.parse(value),
-                        _tempChemical.id = _initValues['id'].toString(),
-                      }
-                  },
-                  textAlign: TextAlign.center,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return "Enter weight";
-                    } else if (double.tryParse(value) == null) {
-                      return "Enter weight in number format";
-                    } else if (double.parse(value) <= 0) {
-                      return "Weight has to be greater than 0";
-                    }
-                    return null;
-                  },
-                  decoration: const InputDecoration(
-                    labelText: "Molecular Weight",
-                  ),
-                  keyboardType: TextInputType.number,
-                  textInputAction: TextInputAction.done,
-                  focusNode: _molWeightFocus,
-                  onFieldSubmitted: (_) => _saveForm(),
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-              ],
+              ),
             ),
-          ),
-        ),
-      ),
     );
   }
 }

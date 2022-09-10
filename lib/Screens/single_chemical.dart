@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/Models/Chemicals/temp_chem_model.dart';
 import '../Models/Chemicals/temp_chem_list.dart';
 import 'package:provider/provider.dart';
 import '../Screens/new_chemical.dart';
 
 class SingleChemical extends StatelessWidget {
-  SingleChemical({Key? key}) : super(key: key);
-  List<ChemModel> elements1 = [];
-  List<String> names = [];
+  const SingleChemical({Key? key}) : super(key: key);
+
   static const routeName = '/single-chemical';
   // final String chemName;
 

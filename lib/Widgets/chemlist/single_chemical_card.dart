@@ -4,7 +4,8 @@ import 'package:provider/provider.dart';
 import '../../Screens/single_chemical.dart';
 
 class SingleChemicalCard extends StatelessWidget {
-  const SingleChemicalCard({Key? key}) : super(key: key);
+  SingleChemicalCard(this.chemElement, {Key? key}) : super(key: key);
+  List<ChemModel> chemElement = [];
 
   void selectedElement(BuildContext ctx, id) {
     Navigator.pushNamed(ctx, SingleChemical.routeName,

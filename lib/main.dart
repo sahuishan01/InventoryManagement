@@ -34,7 +34,7 @@ class MyApp extends StatelessWidget {
         initialRoute: "/",
         routes: {
           '/': (ctx) => const ChemicalList(),
-          SingleChemical.routeName: (ctx) => SingleChemical(),
+          SingleChemical.routeName: (ctx) => const SingleChemical(),
           NewChemical.routeName: (ctx) => const NewChemical(),
         },
       ),
