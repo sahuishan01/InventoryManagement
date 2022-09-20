@@ -22,10 +22,10 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider.value(value: Auth()),
         ChangeNotifierProxyProvider<Auth, ChemList>(
-          create: (ctx) => ChemList(0, []),
+          create: (ctx) => ChemList('', []),
           update: (ctx, auth, previousChemList) => ChemList(
-            double.parse(auth.token as String),
-            previousChemList != null ? previousChemList.elements : [],
+            auth.token != null ? auth.token as String : '',
+            previousChemList == null ? [] : previousChemList.elements,
           ),
         )
       ],
@@ -43,7 +43,18 @@ class MyApp extends StatelessWidget {
                 bodyText2: TextStyle(color: Colors.black),
                 headline6: TextStyle(color: Colors.pink)),
           ),
-          home: auth.isAuth ? const ChemicalList() : const Authentication(),
+          home: auth.isAuth
+              ? const ChemicalList()
+              : FutureBuilder(
+                  future: auth.tryAutoLogin(),
+                  builder: (ctx, authResultSnapshot) =>
+                      authResultSnapshot.connectionState ==
+                              ConnectionState.waiting
+                          ? const Scaffold(
+                              body: Center(child: Text('loading...')),
+                            )
+                          : const Authentication(),
+                ),
           routes: {
             Authentication.routeName: (ctx) => const Authentication(),
             ChemicalList.routeName: (ctx) => const ChemicalList(),

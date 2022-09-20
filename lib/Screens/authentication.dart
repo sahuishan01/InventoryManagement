@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/Screens/chemical_list.dart';
 import 'package:provider/provider.dart';
 import '../Models/auth.dart';
 import '../Widgets/login/signin_text.dart';
@@ -17,6 +16,8 @@ class _AuthenticationState extends State<Authentication> {
   final Map<String, String> _authData = {
     'email': '',
     'password': '',
+    'name': '',
+    'class': ''
   };
 
   final GlobalKey<FormState> _formKey = GlobalKey();
@@ -27,7 +28,7 @@ class _AuthenticationState extends State<Authentication> {
   final _emailController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
 
-  bool _isLogin = false;
+  bool _isLogin = true;
 
   void _clearAllFields() {
     _passwordController.clear();
@@ -61,9 +62,10 @@ class _AuthenticationState extends State<Authentication> {
       try {
         _clearAllFields();
         await Provider.of<Auth>(context, listen: false).signup(
-            _authData['email'] as String, _authData['password'] as String);
-        (() => Navigator.of(context)
-            .pushReplacementNamed(ChemicalList.routeName))();
+            _authData['email'].toString(),
+            _authData['password'].toString(),
+            _authData['name'].toString(),
+            _authData['class'].toString());
       } on HTTPExtension catch (err) {
         var errorMessage = 'SignUp Failed';
         if (err.toString().contains('EMAIL_EXISTS')) {
@@ -93,9 +95,6 @@ class _AuthenticationState extends State<Authentication> {
         _clearAllFields();
         await Provider.of<Auth>(context, listen: false).signin(
             _authData['email'] as String, _authData['password'] as String);
-        (() => Navigator.of(context)
-            .pushReplacementNamed(ChemicalList.routeName))();
-        
       } on HTTPExtension catch (err) {
         var errorMessage = 'Something went wrong';
         if (err.toString().contains('EMAIL_NOT_FOUND')) {
@@ -367,6 +366,11 @@ class _AuthenticationState extends State<Authentication> {
                                   }
                                   return null;
                                 },
+                                onSaved: (newValue) {
+                                  if (newValue != null && newValue.isNotEmpty) {
+                                    _authData['name'] = newValue.toString();
+                                  }
+                                },
                               ),
                             ),
                             SizedBox(height: deviceSize.height * 0.02),
@@ -392,36 +396,43 @@ class _AuthenticationState extends State<Authentication> {
                               width: deviceSize.width * 0.5,
                               //Class TextFormField
                               child: TextFormField(
-                                controller: _classController,
-                                style: const TextStyle(fontSize: 20),
-                                //Removing underline from the input field
-                                decoration: const InputDecoration(
-                                  border: InputBorder.none,
-                                  focusedBorder: InputBorder.none,
-                                  enabledBorder: InputBorder.none,
-                                  errorBorder: InputBorder.none,
-                                  disabledBorder: InputBorder.none,
-                                  contentPadding: EdgeInsets.only(
-                                      left: 15, bottom: 11, top: 11, right: 15),
-                                  hintText: 'Class',
-                                ),
-                                textInputAction: TextInputAction.next,
-
-                                validator: (String? value) {
-                                  if (value != null && value.length <= 3) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                        dismissDirection:
-                                            DismissDirection.endToStart,
-                                        content: Text(
-                                            'Please mention your full class'),
-                                      ),
-                                    );
-                                    return 'Class!!!';
-                                  }
-                                  return null;
-                                },
-                              ),
+                                  controller: _classController,
+                                  style: const TextStyle(fontSize: 20),
+                                  //Removing underline from the input field
+                                  decoration: const InputDecoration(
+                                    border: InputBorder.none,
+                                    focusedBorder: InputBorder.none,
+                                    enabledBorder: InputBorder.none,
+                                    errorBorder: InputBorder.none,
+                                    disabledBorder: InputBorder.none,
+                                    contentPadding: EdgeInsets.only(
+                                        left: 15,
+                                        bottom: 11,
+                                        top: 11,
+                                        right: 15),
+                                    hintText: 'Class',
+                                  ),
+                                  textInputAction: TextInputAction.next,
+                                  validator: (String? value) {
+                                    if (value != null && value.length <= 3) {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        const SnackBar(
+                                          dismissDirection:
+                                              DismissDirection.endToStart,
+                                          content: Text(
+                                              'Please mention your full class'),
+                                        ),
+                                      );
+                                      return 'Class!!!';
+                                    }
+                                    return null;
+                                  },
+                                  onSaved: ((value) {
+                                    if (value != null && value.isNotEmpty) {
+                                      _authData['class'] = value.toString();
+                                    }
+                                  })),
                             ),
 
                             //Empty box for inserting space between form input fields

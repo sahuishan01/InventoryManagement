@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../Models/auth.dart';
 import '../Models/Chemicals/temp_chem_model.dart';
 import './new_chemical.dart';
 import '../Widgets/chemlist/single_chemical_card.dart';
@@ -21,7 +22,7 @@ class _ChemicalListState extends State<ChemicalList> {
   var _init = true;
   var _isLoaded = false;
   @override
-  void didChangeDependencies() {
+  void didChangeDependencies() async {
     if (_init) {
       setState(
         () {
@@ -42,13 +43,9 @@ class _ChemicalListState extends State<ChemicalList> {
         },
       );
     }
-    setState(() {
-      _isLoaded = true;
-    });
+
     tempList = Provider.of<ChemList>(context, listen: true).elements;
-    setState(() {
-      _isLoaded = false;
-    });
+
     super.didChangeDependencies();
   }
 
@@ -64,6 +61,23 @@ class _ChemicalListState extends State<ChemicalList> {
 
   @override
   Widget build(BuildContext context) {
+    bool isAdmin = false;
+    try {
+      isAdmin = Provider.of<Auth>(context, listen: false).isAdmin;
+    } catch (error) {
+      showDialog(
+          context: context,
+          builder: (ctx) => AlertDialog(
+                title: const Text('An error Occurred'),
+                content: Text(error.toString()),
+                actions: <Widget>[
+                  TextButton(
+                    onPressed: () => Navigator.of(ctx).pop(),
+                    child: const Text('Okay'),
+                  ),
+                ],
+              ));
+    }
     double deviceHeight = MediaQuery.of(context).size.height;
     double deviceWidth = MediaQuery.of(context).size.width;
 
@@ -71,6 +85,15 @@ class _ChemicalListState extends State<ChemicalList> {
       leading: const Icon(Icons.science_outlined),
       title: const Text('Chemical List'),
       titleSpacing: 0,
+      actions: <Widget>[
+        IconButton(
+          onPressed: () {
+            Navigator.of(context).pushReplacementNamed('/');
+            Provider.of<Auth>(context, listen: false).logout();
+          },
+          icon: const Icon(Icons.logout_outlined),
+        ),
+      ],
     );
     double appBarHeight = appBar.preferredSize.height;
 
@@ -176,12 +199,14 @@ class _ChemicalListState extends State<ChemicalList> {
                           ),
                         ),
                 ),
-                FloatingActionButton(
-                  splashColor: Colors.black54,
-                  elevation: 10,
-                  onPressed: () => newChemical(context),
-                  child: const Icon(Icons.add),
-                ),
+                isAdmin
+                    ? FloatingActionButton(
+                        splashColor: Colors.black54,
+                        elevation: 10,
+                        onPressed: () => newChemical(context),
+                        child: const Icon(Icons.add),
+                      )
+                    : const SizedBox(),
               ],
             )
           ],

@@ -6,7 +6,7 @@ import 'dart:convert';
 import './temp_chem_model.dart';
 
 class ChemList with ChangeNotifier {
-  final double? authToken;
+  final String? authToken;
   ChemList(this.authToken, this._chemicalList);
   List<ChemModel> _chemicalList = [];
 
@@ -14,35 +14,38 @@ class ChemList with ChangeNotifier {
     return [..._chemicalList];
   }
 
-  Map<String, dynamic> _tempChemList = {};
   Future<void> getLoadedData() async {
-    List<ChemModel> _tempChemical = [];
     final url = Uri.parse(
         'https://inventory-db0eb-default-rtdb.asia-southeast1.firebasedatabase.app/chemicalList.json?auth=$authToken');
     try {
       final response = await http.get(url);
-      _tempChemList = json.decode(response.body) as Map<String, dynamic>;
+      final List<ChemModel> _tempChemical = [];
+
+      final _tempChemList = json.decode(response.body) as Map<String, dynamic>;
+
       _tempChemList.forEach((elementId, value) {
         _tempChemical.add(
           ChemModel(
             id: elementId,
             name: value['name'],
             formula: value['formula'],
-            molWeight: value['molWeight'],
+            molWeight: double.parse(value['molWeight'].toString()),
             description: value['description'],
           ),
         );
       });
+
       _chemicalList = _tempChemical;
       notifyListeners();
     } catch (error) {
+      print(error);
       rethrow;
     }
   }
 
   Future<void> addElement(ChemModel value) async {
     final url = Uri.parse(
-        'https://inventory-db0eb-default-rtdb.asia-southeast1.firebasedatabase.app/chemicalList.json');
+        'https://inventory-db0eb-default-rtdb.asia-southeast1.firebasedatabase.app/chemicalList.json?auth=$authToken');
     try {
       await http.post(
         url,
@@ -63,7 +66,7 @@ class ChemList with ChangeNotifier {
 
   Future<void> updateElement(ChemModel value, String id) async {
     final url = Uri.parse(
-        'https://inventory-db0eb-default-rtdb.asia-southeast1.firebasedatabase.app/chemicalList/$id.json');
+        'https://inventory-db0eb-default-rtdb.asia-southeast1.firebasedatabase.app/chemicalList/$id.json?auth=$authToken');
     try {
       await http.patch(
         url,
@@ -87,7 +90,7 @@ class ChemList with ChangeNotifier {
 
   Future<void> deleteElement(ChemModel value) async {
     final url = Uri.parse(
-        'https://inventory-db0eb-default-rtdb.asia-southeast1.firebasedatabase.app/chemicalList/${value.id}.json');
+        'https://inventory-db0eb-default-rtdb.asia-southeast1.firebasedatabase.app/chemicalList/${value.id}.json?auth=$authToken');
 
     final existingChemicalElementIndex =
         _chemicalList.indexWhere((element) => element.id == value.id);
