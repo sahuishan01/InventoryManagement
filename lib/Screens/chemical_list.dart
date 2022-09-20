@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import '../Models/Chemicals/temp_chem_model.dart';
 import './new_chemical.dart';
 import '../Widgets/chemlist/single_chemical_card.dart';
@@ -8,7 +7,7 @@ import 'package:provider/provider.dart';
 
 class ChemicalList extends StatefulWidget {
   const ChemicalList({Key? key}) : super(key: key);
-
+  static const routeName = "/chem_list";
   @override
   State<ChemicalList> createState() => _ChemicalListState();
 }
@@ -31,34 +30,29 @@ class _ChemicalListState extends State<ChemicalList> {
       );
       Provider.of<ChemList>(context).getLoadedData().catchError(
         (onError) {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text(onError.toString()),
+          ));
+        },
+      ).then(
+        (value) {
           setState(() {
             _init = false;
           });
-          print('inside on error');
-          showDialog(
-            context: context,
-            builder: (ctx) => AlertDialog(
-              title: const Text("Something went wrong"),
-              content: Text(
-                onError.toString(),
-              ),
-              actions: <Widget>[
-                TextButton(
-                    onPressed: () => Navigator.of(ctx).pop,
-                    child: const Text("okay")),
-              ],
-            ),
-          );
         },
       );
     }
     setState(() {
-      _init = false;
+      _isLoaded = true;
     });
     tempList = Provider.of<ChemList>(context, listen: true).elements;
+    setState(() {
+      _isLoaded = false;
+    });
     super.didChangeDependencies();
   }
 
+//for searching elements by name
   void searchText(text) {
     setState(
       () {
@@ -166,7 +160,7 @@ class _ChemicalListState extends State<ChemicalList> {
                 //Displaying all Chemicals
                 SizedBox(
                   height: (deviceHeight - appBarHeight) * 0.8,
-                  child: _isLoaded
+                  child: !_isLoaded
                       ? const Center(
                           child: CircularProgressIndicator(),
                         )

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/Models/auth.dart';
+import './Screens/authentication.dart';
 import './Screens/new_chemical.dart';
 import './Screens/chemical_list.dart';
 import './Screens/single_chemical.dart';
@@ -16,27 +18,39 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider.value(
-      value: ChemList(),
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        title: "Inventory",
-        theme: ThemeData(
-          primarySwatch: Colors.pink,
-          primaryColor: Colors.pink,
-          textTheme: const TextTheme(
-              headline1: TextStyle(color: Colors.black),
-              headline2: TextStyle(color: Colors.black),
-              bodyText1: TextStyle(color: Colors.black),
-              bodyText2: TextStyle(color: Colors.black),
-              headline6: TextStyle(color: Colors.pink)),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider.value(value: Auth()),
+        ChangeNotifierProxyProvider<Auth, ChemList>(
+          create: (ctx) => ChemList(0, []),
+          update: (ctx, auth, previousChemList) => ChemList(
+            double.parse(auth.token as String),
+            previousChemList != null ? previousChemList.elements : [],
+          ),
+        )
+      ],
+      child: Consumer<Auth>(
+        builder: (ctx, auth, _) => MaterialApp(
+          debugShowCheckedModeBanner: false,
+          title: "Inventory",
+          theme: ThemeData(
+            primarySwatch: Colors.pink,
+            primaryColor: Colors.pink,
+            textTheme: const TextTheme(
+                headline1: TextStyle(color: Colors.black),
+                headline2: TextStyle(color: Colors.black),
+                bodyText1: TextStyle(color: Colors.black),
+                bodyText2: TextStyle(color: Colors.black),
+                headline6: TextStyle(color: Colors.pink)),
+          ),
+          home: auth.isAuth ? const ChemicalList() : const Authentication(),
+          routes: {
+            Authentication.routeName: (ctx) => const Authentication(),
+            ChemicalList.routeName: (ctx) => const ChemicalList(),
+            SingleChemical.routeName: (ctx) => const SingleChemical(),
+            NewChemical.routeName: (ctx) => const NewChemical(),
+          },
         ),
-        initialRoute: "/",
-        routes: {
-          '/': (ctx) => const ChemicalList(),
-          SingleChemical.routeName: (ctx) => const SingleChemical(),
-          NewChemical.routeName: (ctx) => const NewChemical(),
-        },
       ),
     );
   }

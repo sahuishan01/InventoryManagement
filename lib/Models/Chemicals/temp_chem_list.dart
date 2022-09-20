@@ -1,11 +1,13 @@
 // ignore_for_file: no_leading_underscores_for_local_identifiers
-
+import '../http_exception.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import './temp_chem_model.dart';
 
 class ChemList with ChangeNotifier {
+  final double? authToken;
+  ChemList(this.authToken, this._chemicalList);
   List<ChemModel> _chemicalList = [];
 
   List<ChemModel> get elements {
@@ -16,18 +18,25 @@ class ChemList with ChangeNotifier {
   Future<void> getLoadedData() async {
     List<ChemModel> _tempChemical = [];
     final url = Uri.parse(
-        'https://inventory-db0eb-default-rtdb.asia-southeast1.firebasedatabase.app/chemicalList');
+        'https://inventory-db0eb-default-rtdb.asia-southeast1.firebasedatabase.app/chemicalList.json?auth=$authToken');
     try {
       final response = await http.get(url);
       _tempChemList = json.decode(response.body) as Map<String, dynamic>;
       _tempChemList.forEach((elementId, value) {
-        _tempChemical.add(ChemModel(
-            id: elementId, name: value['name'], formula: value['formula']));
+        _tempChemical.add(
+          ChemModel(
+            id: elementId,
+            name: value['name'],
+            formula: value['formula'],
+            molWeight: value['molWeight'],
+            description: value['description'],
+          ),
+        );
       });
       _chemicalList = _tempChemical;
       notifyListeners();
     } catch (error) {
-      ;
+      rethrow;
     }
   }
 
@@ -52,15 +61,48 @@ class ChemList with ChangeNotifier {
     }
   }
 
-  void updateElement(ChemModel value, String id) {
+  Future<void> updateElement(ChemModel value, String id) async {
+    final url = Uri.parse(
+        'https://inventory-db0eb-default-rtdb.asia-southeast1.firebasedatabase.app/chemicalList/$id.json');
+    try {
+      await http.patch(
+        url,
+        body: json.encode(
+          {
+            "name": value.name,
+            "formula": value.formula,
+            "description": value.description,
+            "molWeight": value.molWeight,
+          },
+        ),
+      );
+    } catch (err) {
+      rethrow;
+    }
+
     final updateIndex = _chemicalList.indexWhere((element) => element.id == id);
     _chemicalList[updateIndex] = value;
     notifyListeners();
   }
 
-  void deleteElement(ChemModel value) {
-    _chemicalList.removeWhere((element) => element.id == value.id);
+  Future<void> deleteElement(ChemModel value) async {
+    final url = Uri.parse(
+        'https://inventory-db0eb-default-rtdb.asia-southeast1.firebasedatabase.app/chemicalList/${value.id}.json');
+
+    final existingChemicalElementIndex =
+        _chemicalList.indexWhere((element) => element.id == value.id);
+    ChemModel? existingChemicalElement =
+        _chemicalList[existingChemicalElementIndex];
+    _chemicalList.removeAt(existingChemicalElementIndex);
     notifyListeners();
+    final response = await http.delete(url);
+    if (response.statusCode >= 400) {
+      _chemicalList.insert(
+          existingChemicalElementIndex, existingChemicalElement);
+      notifyListeners();
+      throw HTTPExtension('Deletion Failed');
+    }
+    existingChemicalElement = null;
   }
 
   ChemModel findById(String id) {

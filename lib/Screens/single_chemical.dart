@@ -11,6 +11,11 @@ class SingleChemical extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scaffoldContext = ScaffoldMessenger.of(context);
+    void popScreen() {
+      Navigator.pop(context, false);
+    }
+
     final routeArgs =
         ModalRoute.of(context)!.settings.arguments as List<String>;
 
@@ -33,7 +38,8 @@ class SingleChemical extends StatelessWidget {
               children: [
                 IconButton(
                   onPressed: () => {
-                    Navigator.of(context).pushNamed(NewChemical.routeName,
+                    Navigator.of(context).pushReplacementNamed(
+                        NewChemical.routeName,
                         arguments: [element.id]),
                   },
                   icon: const Icon(Icons.edit),
@@ -42,10 +48,21 @@ class SingleChemical extends StatelessWidget {
                   width: 20,
                 ),
                 IconButton(
-                  onPressed: () => {
-                    Provider.of<ChemList>(context, listen: false)
-                        .deleteElement(element),
-                    Navigator.pop(context, false),
+                  onPressed: () async {
+                    try {
+                      await Provider.of<ChemList>(context, listen: false)
+                          .deleteElement(element);
+                      popScreen();
+                    } catch (err) {
+                      scaffoldContext.showSnackBar(
+                        const SnackBar(
+                          content: Text(
+                            "Deletion failed",
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      );
+                    }
                   },
                   icon: const Icon(Icons.delete_forever_outlined),
                 ),

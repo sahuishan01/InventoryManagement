@@ -1,5 +1,3 @@
-import 'package:fluttertoast/fluttertoast.dart';
-
 import '../Models/Chemicals/temp_chem_list.dart';
 
 import 'package:flutter/material.dart';
@@ -57,19 +55,31 @@ class _NewChemicalState extends State<NewChemical> {
           _isLoading = false;
         });
       } catch (err) {
-        (err) => Fluttertoast.showToast(
-            msg: err,
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.BOTTOM);
+        (err) {
+          showDialog(
+            context: context,
+            builder: (ctx) => AlertDialog(
+              title: const Text("Something went wrong"),
+              content: Text(
+                err.toString(),
+              ),
+              actions: <Widget>[
+                TextButton(
+                    onPressed: () => Navigator.of(ctx).pop,
+                    child: const Text("okay")),
+              ],
+            ),
+          );
+        };
       }
     } else {
-      Provider.of<ChemList>(context, listen: false)
+      await Provider.of<ChemList>(context, listen: false)
           .updateElement(_tempChemical, _tempChemical.id);
-      setState(() {
-        _isLoading = false;
-      });
     }
-    Navigator.of(context).pop();
+    setState(() {
+      _isLoading = false;
+      Navigator.of(context).pop();
+    });
   }
 
   var _isInit = true;
@@ -135,6 +145,7 @@ class _NewChemicalState extends State<NewChemical> {
                         height: 20,
                       ),
                       TextFormField(
+                        autofocus: true,
                         initialValue: _initValues['name'].toString(),
                         onSaved: (value) => {
                           if (value != null && value.isNotEmpty)
@@ -151,8 +162,6 @@ class _NewChemicalState extends State<NewChemical> {
                           labelText: "Chemical Name",
                         ),
                         textInputAction: TextInputAction.next,
-                        onFieldSubmitted: (_) =>
-                            Focus.of(context).requestFocus(_descriptionFocus),
                       ),
                       const SizedBox(
                         height: 20,
@@ -175,8 +184,6 @@ class _NewChemicalState extends State<NewChemical> {
                         textAlign: TextAlign.center,
                         textInputAction: TextInputAction.next,
                         focusNode: _descriptionFocus,
-                        onFieldSubmitted: (_) =>
-                            Focus.of(context).requestFocus(_formulaFocus),
                       ),
                       const SizedBox(
                         height: 20,
@@ -199,8 +206,8 @@ class _NewChemicalState extends State<NewChemical> {
                         ),
                         textInputAction: TextInputAction.next,
                         focusNode: _formulaFocus,
-                        onFieldSubmitted: (_) =>
-                            Focus.of(context).requestFocus(_molWeightFocus),
+                        // onFieldSubmitted: (_) =>
+                        //     Focus.of(context).requestFocus(_molWeightFocus),
                       ),
                       const SizedBox(
                         height: 20,

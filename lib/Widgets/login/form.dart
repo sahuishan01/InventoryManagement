@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 
 class Form1 extends StatelessWidget {
   final double deviceHeight, deviceWidth;
-  final GlobalKey<FormState> _formKey;
-  const Form1(this.deviceHeight, this.deviceWidth, this._formKey, {Key? key})
+  // final GlobalKey<FormState> _formKey;
+  const Form1(this.deviceHeight, this.deviceWidth, {Key? key})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Form(
-      key: _formKey,
+      // key: _formKey,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [

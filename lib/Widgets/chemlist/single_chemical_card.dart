@@ -4,9 +4,10 @@ import 'package:provider/provider.dart';
 import '../../Screens/single_chemical.dart';
 
 class SingleChemicalCard extends StatelessWidget {
-  SingleChemicalCard(this.chemElement, {Key? key}) : super(key: key);
-  List<ChemModel> chemElement = [];
+  const SingleChemicalCard(this.chemElement, {Key? key}) : super(key: key);
+  final List<ChemModel> chemElement;
 
+//For viewing single element
   void selectedElement(BuildContext ctx, id) {
     Navigator.pushNamed(ctx, SingleChemical.routeName,
         arguments: [id as String]);
@@ -16,7 +17,7 @@ class SingleChemicalCard extends StatelessWidget {
   Widget build(BuildContext context) {
     double deviceHeight = MediaQuery.of(context).size.height;
     double deviceWidth = MediaQuery.of(context).size.width;
-    final chemElement = Provider.of<ChemModel>(context, listen: false);
+    final chemElement = Provider.of<ChemModel>(context);
 
     return Card(
       elevation: 2,
