@@ -5,16 +5,14 @@ import 'package:provider/provider.dart';
 import '../Screens/new_chemical.dart';
 
 class SingleChemical extends StatelessWidget {
-  const SingleChemical({Key? key}) : super(key: key);
+  SingleChemical({Key? key}) : super(key: key);
 
   static const routeName = '/single-chemical';
   // final String chemName;
-
-  @override
-  Widget build(BuildContext context) {
-    bool isAdmin = false;
+  bool _isAdmin = false;
+  void checkAdmin(context) async {
     try {
-      isAdmin = Provider.of<Auth>(context, listen: false).isAdmin;
+      _isAdmin = await Provider.of<Auth>(context, listen: false).isAdmin;
     } catch (error) {
       showDialog(
           context: context,
@@ -29,6 +27,11 @@ class SingleChemical extends StatelessWidget {
                 ],
               ));
     }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    checkAdmin(context);
     final scaffoldContext = ScaffoldMessenger.of(context);
     void popScreen() {
       Navigator.pop(context, false);
@@ -51,7 +54,7 @@ class SingleChemical extends StatelessWidget {
             const SizedBox(
               height: 10,
             ),
-            isAdmin
+            _isAdmin
                 ? Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [

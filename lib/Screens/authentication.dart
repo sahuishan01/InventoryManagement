@@ -250,8 +250,8 @@ class _AuthenticationState extends State<Authentication> {
                               width: deviceSize.width * 0.3,
                               child: ElevatedButton(
                                 style: ElevatedButton.styleFrom(
-                                  primary: Colors.pink[800],
-                                  onPrimary: Colors.white,
+                                  backgroundColor: Colors.pink[800],
+                                  foregroundColor: Colors.white,
                                   shadowColor: Colors.red,
                                   elevation: 8,
                                   shape: RoundedRectangleBorder(
@@ -614,8 +614,8 @@ class _AuthenticationState extends State<Authentication> {
                               width: deviceSize.width * 0.3,
                               child: ElevatedButton(
                                 style: ElevatedButton.styleFrom(
-                                  primary: Colors.pink[800],
-                                  onPrimary: Colors.white,
+                                  backgroundColor: Colors.pink[800],
+                                  foregroundColor: Colors.white,
                                   shadowColor: Colors.red,
                                   elevation: 8,
                                   shape: RoundedRectangleBorder(

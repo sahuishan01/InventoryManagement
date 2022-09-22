@@ -10,7 +10,6 @@ class Auth with ChangeNotifier {
   String? _token;
   DateTime? _expiryDate;
   String? _userId;
-  bool _isAdmin = false;
   Timer? _authTimer;
   bool get isAuth {
     return token != null;
@@ -29,23 +28,23 @@ class Auth with ChangeNotifier {
     return _userId;
   }
 
-  bool get isAdmin {
+  Future<bool> get isAdmin async {
     final url = Uri.parse(
         'https://inventory-db0eb-default-rtdb.asia-southeast1.firebasedatabase.app/users/$_userId.json?auth=$_token');
-
-    http
-        .get(url)
-        .then((response) => json.decode(response.body))
-        .then((value) => value['isAdmin'].toString() == 'false'
-            ? _isAdmin = false
-            : _isAdmin = true)
-        .catchError((onError) => throw onError);
-
-    return _isAdmin;
+    try {
+      final response = await http.get(url);
+      final value = json.decode(response.body);
+      if (value['isAdmin'].toString() == 'false') {
+        return false;
+      }
+      return true;
+    } catch (err) {
+      rethrow;
+    }
   }
 
   Future<void> _authenticate(String email, String password, String partUrl,
-      {String name = '', String? studentClass = ''}) async {
+      {String name = '', String studentClass = ''}) async {
     final url = Uri.parse(
         'https://identitytoolkit.googleapis.com/v1/accounts:$partUrl?key=AIzaSyBB4AmWbOqIrkKTns4PdvAP5sHf-FuEEyY');
     try {
@@ -79,7 +78,7 @@ class Auth with ChangeNotifier {
                 'name': name,
                 'class': studentClass,
                 'id': _userId,
-                'isAdmin': true,
+                'isAdmin': false,
               },
             ),
           );
@@ -117,7 +116,7 @@ class Auth with ChangeNotifier {
       return false;
     }
     final extractedUserData =
-        json.decode(pref.getString('user').toString()) as Map<String, Object>;
+        json.decode(pref.getString('user').toString()) as Map<String, dynamic>;
     final expiryDate =
         DateTime.parse(extractedUserData['expiryDate'].toString());
     if (expiryDate.isBefore(DateTime.now())) {

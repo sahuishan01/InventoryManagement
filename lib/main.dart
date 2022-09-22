@@ -6,7 +6,6 @@ import './Screens/chemical_list.dart';
 import './Screens/single_chemical.dart';
 import 'package:provider/provider.dart';
 import 'Models/Chemicals/temp_chem_list.dart';
-// import 'login/login.dart';
 
 void main() {
   runApp(const MyApp());
@@ -51,14 +50,14 @@ class MyApp extends StatelessWidget {
                       authResultSnapshot.connectionState ==
                               ConnectionState.waiting
                           ? const Scaffold(
-                              body: Center(child: Text('loading...')),
+                              body: Center(child: CircularProgressIndicator()),
                             )
                           : const Authentication(),
                 ),
           routes: {
             Authentication.routeName: (ctx) => const Authentication(),
             ChemicalList.routeName: (ctx) => const ChemicalList(),
-            SingleChemical.routeName: (ctx) => const SingleChemical(),
+            SingleChemical.routeName: (ctx) => SingleChemical(),
             NewChemical.routeName: (ctx) => const NewChemical(),
           },
         ),

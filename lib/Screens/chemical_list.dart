@@ -59,11 +59,10 @@ class _ChemicalListState extends State<ChemicalList> {
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    bool isAdmin = false;
+  bool isAdmin = false;
+  void checkAdmin() async {
     try {
-      isAdmin = Provider.of<Auth>(context, listen: false).isAdmin;
+      isAdmin = await Provider.of<Auth>(context, listen: false).isAdmin;
     } catch (error) {
       showDialog(
           context: context,
@@ -78,6 +77,11 @@ class _ChemicalListState extends State<ChemicalList> {
                 ],
               ));
     }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    checkAdmin();
     double deviceHeight = MediaQuery.of(context).size.height;
     double deviceWidth = MediaQuery.of(context).size.width;
 
