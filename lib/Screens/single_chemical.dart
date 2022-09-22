@@ -9,39 +9,19 @@ class SingleChemical extends StatelessWidget {
 
   static const routeName = '/single-chemical';
   // final String chemName;
-  bool _isAdmin = false;
-  void checkAdmin(context) async {
-    try {
-      _isAdmin = await Provider.of<Auth>(context, listen: false).isAdmin;
-    } catch (error) {
-      showDialog(
-          context: context,
-          builder: (ctx) => AlertDialog(
-                title: const Text('An error Occurred'),
-                content: Text(error.toString()),
-                actions: <Widget>[
-                  TextButton(
-                    onPressed: () => Navigator.of(ctx).pop(),
-                    child: const Text('Okay'),
-                  ),
-                ],
-              ));
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
-    checkAdmin(context);
     final scaffoldContext = ScaffoldMessenger.of(context);
     void popScreen() {
       Navigator.pop(context, false);
     }
 
-    final routeArgs =
-        ModalRoute.of(context)!.settings.arguments as List<String>;
+    final routeArgs = ModalRoute.of(context)!.settings.arguments as Map;
 
     final element =
-        Provider.of<ChemList>(context, listen: false).findById(routeArgs[0]);
+        Provider.of<ChemList>(context, listen: false).findById(routeArgs['id']);
+    final bool _isAdmin = routeArgs['isAdmin'] as bool;
 
     return Scaffold(
       appBar: AppBar(title: Text(element.name)),

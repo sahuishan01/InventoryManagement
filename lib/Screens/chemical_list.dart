@@ -6,6 +6,11 @@ import '../Widgets/chemlist/single_chemical_card.dart';
 import '../Models/Chemicals/temp_chem_list.dart';
 import 'package:provider/provider.dart';
 
+import 'package:image_cropper/image_cropper.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
+import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
+
 class ChemicalList extends StatefulWidget {
   const ChemicalList({Key? key}) : super(key: key);
   static const routeName = "/chem_list";
@@ -47,6 +52,94 @@ class _ChemicalListState extends State<ChemicalList> {
     tempList = Provider.of<ChemList>(context, listen: true).elements;
 
     super.didChangeDependencies();
+  }
+
+  final _scanController = TextEditingController();
+
+  @override
+  void dispose() {
+    _scanController.dispose();
+    super.dispose();
+  }
+//scan for text
+
+  //taking image
+  Future<void> _takePicture() async {
+    try {
+      final imageFile = await ImagePicker().pickImage(
+        source: ImageSource.camera,
+        maxHeight: 600,
+        maxWidth: 600,
+        imageQuality: 100,
+      );
+
+      _cropImage(imageFile!.path);
+    } catch (err) {
+      _showError('Failed to capture image, please try again!!!');
+      return;
+    }
+  }
+
+  //cropping image
+  void _cropImage(filePath) async {
+    try {
+      CroppedFile? croppedFile = await ImageCropper()
+          .cropImage(sourcePath: filePath, maxHeight: 1000, maxWidth: 1000);
+      InputImage inputImage = InputImage.fromFilePath(croppedFile!.path);
+
+      processImage(inputImage);
+    } catch (err) {
+      _showError('Failed to crop image, please try again');
+      return;
+    }
+  }
+
+  // Processing cropped image for text
+
+  String _text = '';
+  final textRecognizer = TextRecognizer();
+  Future<void> processImage(InputImage inputImage) async {
+    setState(() {
+      _text = '';
+    });
+    try {
+      final RecognizedText recognizedText =
+          await textRecognizer.processImage(inputImage);
+      for (TextBlock block in recognizedText.blocks) {
+        for (TextLine line in block.lines) {
+          for (TextElement element in line.elements) {
+            String tempString = element.text;
+            _text += tempString;
+          }
+        }
+      }
+      if (_text == '') {
+        _showError('Failed to identify text, try again');
+        return;
+      }
+      _scanController.text = _text;
+      searchText(_text);
+      textRecognizer.close();
+    } catch (err) {
+      _showError('Can not find text from the image, try again!!!');
+      return;
+    }
+  }
+
+//handling errors
+  void _showError(String msg) {
+    showDialog(
+        context: context,
+        builder: (ctx) => AlertDialog(
+              title: const Text('An error Occurred'),
+              content: Text(msg),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () => Navigator.of(ctx).pop(),
+                  child: const Text('Okay'),
+                ),
+              ],
+            ));
   }
 
 //for searching elements by name
@@ -136,6 +229,7 @@ class _ChemicalListState extends State<ChemicalList> {
                         border: Border.all(color: Colors.pink),
                       ),
                       child: TextField(
+                        controller: _scanController,
                         onChanged: (text) => searchText(text),
                         textAlign: TextAlign.center,
                         style:
@@ -173,7 +267,7 @@ class _ChemicalListState extends State<ChemicalList> {
                             "Scan",
                             style: TextStyle(fontSize: 20, color: Colors.white),
                           ),
-                          onPressed: () => {},
+                          onPressed: () => _takePicture(),
                         )),
                   ),
                 ],
@@ -199,7 +293,7 @@ class _ChemicalListState extends State<ChemicalList> {
                           itemBuilder: (ctx, index) =>
                               ChangeNotifierProvider.value(
                             value: tempList[index],
-                            child: SingleChemicalCard(tempList),
+                            child: SingleChemicalCard(tempList, isAdmin),
                           ),
                         ),
                 ),

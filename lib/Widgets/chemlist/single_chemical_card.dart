@@ -4,13 +4,15 @@ import 'package:provider/provider.dart';
 import '../../Screens/single_chemical.dart';
 
 class SingleChemicalCard extends StatelessWidget {
-  const SingleChemicalCard(this.chemElement, {Key? key}) : super(key: key);
+  const SingleChemicalCard(this.chemElement, this.isAdmin, {Key? key})
+      : super(key: key);
   final List<ChemModel> chemElement;
+  final bool isAdmin;
 
 //For viewing single element
   void selectedElement(BuildContext ctx, id) {
     Navigator.pushNamed(ctx, SingleChemical.routeName,
-        arguments: [id as String]);
+        arguments: {'id': id as String, 'isAdmin': isAdmin});
   }
 
   @override
