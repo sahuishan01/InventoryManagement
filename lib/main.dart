@@ -36,11 +36,12 @@ class MyApp extends StatelessWidget {
             primarySwatch: Colors.pink,
             primaryColor: Colors.pink,
             textTheme: const TextTheme(
-                headline1: TextStyle(color: Colors.black),
-                headline2: TextStyle(color: Colors.black),
-                bodyText1: TextStyle(color: Colors.black),
-                bodyText2: TextStyle(color: Colors.black),
-                headline6: TextStyle(color: Colors.pink)),
+              headline1: TextStyle(color: Colors.black),
+              headline2: TextStyle(color: Colors.black),
+              bodyText1: TextStyle(color: Colors.black),
+              bodyText2: TextStyle(color: Colors.black),
+              headline6: TextStyle(color: Colors.pink),
+            ),
           ),
           home: auth.isAuth
               ? const ChemicalList()

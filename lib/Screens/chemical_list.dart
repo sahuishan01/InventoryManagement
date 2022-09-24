@@ -8,7 +8,6 @@ import 'package:provider/provider.dart';
 
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
-import 'dart:io';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 
 class ChemicalList extends StatefulWidget {
@@ -36,8 +35,9 @@ class _ChemicalListState extends State<ChemicalList> {
       );
       Provider.of<ChemList>(context).getLoadedData().catchError(
         (onError) {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text(onError.toString()),
+          print(onError);
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text('Could not load content, try again later'),
           ));
         },
       ).then(
@@ -179,6 +179,7 @@ class _ChemicalListState extends State<ChemicalList> {
     double deviceWidth = MediaQuery.of(context).size.width;
 
     AppBar appBar = AppBar(
+      backgroundColor: Colors.pink,
       leading: const Icon(Icons.science_outlined),
       title: const Text('Chemical List'),
       titleSpacing: 0,

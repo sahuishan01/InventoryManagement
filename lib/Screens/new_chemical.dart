@@ -18,14 +18,33 @@ class _NewChemicalState extends State<NewChemical> {
   final _form = GlobalKey<FormState>();
 
   var _isLoading = false;
-  ChemModel _tempChemical =
-      ChemModel(id: '', name: '', formula: '', description: '', molWeight: 0);
+  ChemModel _tempChemical = ChemModel(
+    id: '',
+    name: '',
+    formula: '',
+    description: '',
+    state: '',
+    grade: '',
+    hazard: [],
+    assay: '',
+    density: 0,
+    meltingPoint: 0,
+    boilingPoint: 0,
+    molWeight: 0,
+  );
 
   var _initValues = {
-    'name': '',
     'id': '',
+    'name': '',
     'formula': '',
     'description': '',
+    'state': '',
+    'grade': '',
+    'hazard': '',
+    'assay': '',
+    'density': 0,
+    'meltingPoint': 0,
+    'boilingPoint': 0,
     'molWeight': 0,
   };
   @override
@@ -94,6 +113,13 @@ class _NewChemicalState extends State<NewChemical> {
         _tempChemical = Provider.of<ChemList>(context, listen: false)
             .findById(chemicalId[0]);
         _initValues = {
+          'state': _tempChemical.state,
+          'grade': _tempChemical.grade,
+          'hazard': _tempChemical.hazard.join(', '),
+          'assay': _tempChemical.assay,
+          'density': _tempChemical.density,
+          'meltingPoint': _tempChemical.meltingPoint,
+          'boilingPoint': _tempChemical.boilingPoint,
           'name': _tempChemical.name,
           'id': _tempChemical.id,
           'formula': _tempChemical.formula,
@@ -132,118 +158,327 @@ class _NewChemicalState extends State<NewChemical> {
             )
           : Form(
               key: _form,
-              child: SingleChildScrollView(
-                child: Padding(
-                  padding: EdgeInsets.symmetric(
-                      vertical: deviceHeight * 0.07,
-                      horizontal: deviceWidth * 0.05),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      const Text('Hello this is new chemical addition form'),
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      TextFormField(
-                        autofocus: true,
-                        initialValue: _initValues['name'].toString(),
-                        onSaved: (value) => {
-                          if (value != null && value.isNotEmpty)
-                            {
-                              _tempChemical.name = value,
-                              _tempChemical.id = _initValues['id'].toString(),
-                            }
-                        },
-                        validator: (value) => value!.isEmpty
-                            ? "Please enter the name of chemical"
-                            : null,
-                        textAlign: TextAlign.center,
-                        decoration: const InputDecoration(
-                          labelText: "Chemical Name",
+              child: Scrollbar(
+                thumbVisibility: true,
+                trackVisibility: true,
+                child: SingleChildScrollView(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(
+                        vertical: deviceHeight * 0.03,
+                        horizontal: deviceWidth * 0.05),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        const SizedBox(
+                          height: 30,
                         ),
-                        textInputAction: TextInputAction.next,
-                      ),
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      TextFormField(
-                        initialValue: _initValues['description'].toString(),
-                        onSaved: (value) => {
-                          if (value != null && value.isNotEmpty)
-                            {
-                              _tempChemical.description = value,
-                              _tempChemical.id = _initValues['id'].toString(),
-                            }
-                        },
-                        validator: (value) => value!.isEmpty
-                            ? "Please enter the description of chemical"
-                            : null,
-                        decoration: const InputDecoration(
-                          labelText: "Description",
+                        //name
+                        TextFormField(
+                          autofocus: true,
+                          initialValue: _initValues['name'].toString(),
+                          onSaved: (value) => {
+                            if (value != null && value.isNotEmpty)
+                              {
+                                _tempChemical.name = value,
+                                _tempChemical.id = _initValues['id'].toString(),
+                              }
+                          },
+                          validator: (value) => value!.isEmpty
+                              ? "Please enter the name of chemical"
+                              : null,
+                          textAlign: TextAlign.center,
+                          decoration: const InputDecoration(
+                            labelText: "Element Name",
+                          ),
+                          textInputAction: TextInputAction.next,
                         ),
-                        textAlign: TextAlign.center,
-                        textInputAction: TextInputAction.next,
-                        focusNode: _descriptionFocus,
-                      ),
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      TextFormField(
-                        initialValue: _initValues['formula'].toString(),
-                        onSaved: (value) => {
-                          if (value != null && value.isNotEmpty)
-                            {
-                              _tempChemical.formula = value,
-                              _tempChemical.id = _initValues['id'].toString(),
-                            }
-                        },
-                        textAlign: TextAlign.center,
-                        validator: (value) => value!.isEmpty
-                            ? "Please enter the formula of chemical"
-                            : null,
-                        decoration: const InputDecoration(
-                          labelText: "Formula",
+                        const SizedBox(
+                          height: 20,
                         ),
-                        textInputAction: TextInputAction.next,
-                        focusNode: _formulaFocus,
-                        // onFieldSubmitted: (_) =>
-                        //     Focus.of(context).requestFocus(_molWeightFocus),
-                      ),
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      TextFormField(
-                        initialValue: _initValues['molWeight'].toString(),
-                        onSaved: (value) => {
-                          if (value != null && value.isNotEmpty)
-                            {
-                              _tempChemical.molWeight = double.parse(value),
-                              _tempChemical.id = _initValues['id'].toString(),
-                            }
-                        },
-                        textAlign: TextAlign.center,
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return "Enter weight";
-                          } else if (double.tryParse(value) == null) {
-                            return "Enter weight in number format";
-                          } else if (double.parse(value) <= 0) {
-                            return "Weight has to be greater than 0";
-                          }
-                          return null;
-                        },
-                        decoration: const InputDecoration(
-                          labelText: "Molecular Weight",
+                        //url
+                        TextFormField(
+                          initialValue: _initValues['description'].toString(),
+                          onSaved: (value) => {
+                            if (value != null && value.isNotEmpty)
+                              {
+                                _tempChemical.description = value,
+                                _tempChemical.id = _initValues['id'].toString(),
+                              }
+                          },
+                          validator: (value) => value!.isEmpty
+                              ? "Please enter the description of chemical"
+                              : null,
+                          decoration: const InputDecoration(
+                            labelText: "Description",
+                          ),
+                          textAlign: TextAlign.center,
+                          textInputAction: TextInputAction.next,
+                          focusNode: _descriptionFocus,
                         ),
-                        keyboardType: TextInputType.number,
-                        textInputAction: TextInputAction.done,
-                        focusNode: _molWeightFocus,
-                        onFieldSubmitted: (_) => _saveForm(),
-                      ),
-                      const SizedBox(
-                        height: 20,
-                      ),
-                    ],
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        //formula
+                        TextFormField(
+                          initialValue: _initValues['formula'].toString(),
+                          onSaved: (value) => {
+                            if (value != null && value.isNotEmpty)
+                              {
+                                _tempChemical.formula = value,
+                                _tempChemical.id = _initValues['id'].toString(),
+                              }
+                          },
+                          textAlign: TextAlign.center,
+                          validator: (value) => value!.isEmpty
+                              ? "Please enter the formula of chemical"
+                              : null,
+                          decoration: const InputDecoration(
+                            labelText: "Formula",
+                          ),
+                          textInputAction: TextInputAction.next,
+                          focusNode: _formulaFocus,
+                          // onFieldSubmitted: (_) =>
+                          //     Focus.of(context).requestFocus(_molWeightFocus),
+                        ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        //molWeight
+                        TextFormField(
+                          initialValue: _initValues['molWeight'] != 0
+                              ? _initValues['molWeight'].toString()
+                              : '',
+                          onSaved: (value) => {
+                            if (value != null && value.isNotEmpty)
+                              {
+                                _tempChemical.molWeight = double.parse(value),
+                                _tempChemical.id = _initValues['id'].toString(),
+                              }
+                          },
+                          textAlign: TextAlign.center,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return "Enter weight";
+                            } else if (double.tryParse(value) == null) {
+                              return "Enter weight in number format";
+                            } else if (double.parse(value) <= 0) {
+                              return "Weight has to be greater than 0";
+                            }
+                            return null;
+                          },
+                          decoration: const InputDecoration(
+                            labelText: "Molecular Weight",
+                          ),
+                          keyboardType: TextInputType.number,
+                          textInputAction: TextInputAction.next,
+                          focusNode: _molWeightFocus,
+                        ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        //state
+                        TextFormField(
+                          initialValue: _initValues['state'].toString(),
+                          onSaved: (value) => {
+                            if (value != null && value.isNotEmpty)
+                              {
+                                _tempChemical.state = value,
+                                _tempChemical.id = _initValues['id'].toString(),
+                              }
+                          },
+                          textAlign: TextAlign.center,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return "Enter state";
+                            }
+                            return null;
+                          },
+                          decoration: const InputDecoration(
+                            labelText: "Element State",
+                          ),
+                          keyboardType: TextInputType.name,
+                          textInputAction: TextInputAction.next,
+                        ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        //grade
+                        TextFormField(
+                          initialValue: _initValues['grade'].toString(),
+                          onSaved: (value) => {
+                            if (value != null && value.isNotEmpty)
+                              {
+                                _tempChemical.grade = value,
+                                _tempChemical.id = _initValues['id'].toString(),
+                              }
+                          },
+                          textAlign: TextAlign.center,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return "Enter grade";
+                            }
+                            return null;
+                          },
+                          decoration: const InputDecoration(
+                            labelText: "Element Grade",
+                          ),
+                          keyboardType: TextInputType.name,
+                          textInputAction: TextInputAction.next,
+                        ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        //hazard
+                        TextFormField(
+                          initialValue: _initValues['hazard'].toString(),
+                          onSaved: (value) => {
+                            if (value != null && value.isNotEmpty)
+                              {
+                                value.split(",").forEach((element) {
+                                  _tempChemical.hazard.add(element.trim());
+                                }),
+                                _tempChemical.id = _initValues['id'].toString(),
+                              }
+                          },
+                          textAlign: TextAlign.center,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return "Enter hazards";
+                            }
+                            return null;
+                          },
+                          decoration: const InputDecoration(
+                            labelText: "Hazards",
+                          ),
+                          keyboardType: TextInputType.name,
+                          textInputAction: TextInputAction.next,
+                        ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+
+                        //assay
+                        TextFormField(
+                          initialValue: _initValues['assay'].toString(),
+                          onSaved: (value) => {
+                            if (value != null && value.isNotEmpty)
+                              {
+                                _tempChemical.assay = value,
+                                _tempChemical.id = _initValues['id'].toString(),
+                              }
+                          },
+                          textAlign: TextAlign.center,
+                          decoration: const InputDecoration(
+                            labelText: "Assay (if applicable)",
+                          ),
+                          keyboardType: TextInputType.name,
+                          textInputAction: TextInputAction.next,
+                        ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        //density
+                        TextFormField(
+                          initialValue: _initValues['density'] != 0
+                              ? _initValues['density'].toString()
+                              : '',
+                          onSaved: (value) => {
+                            if (value != null && value.isNotEmpty)
+                              {
+                                _tempChemical.density = double.parse(value),
+                                _tempChemical.id = _initValues['id'].toString(),
+                              }
+                          },
+                          textAlign: TextAlign.center,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return "Enter density";
+                            } else if (double.tryParse(value) == null) {
+                              return "Enter weight in number format";
+                            } else if (double.parse(value) <= 0) {
+                              return "Weight has to be greater than 0";
+                            }
+                            return null;
+                          },
+                          decoration: const InputDecoration(
+                            labelText: "Element Density",
+                          ),
+                          keyboardType: TextInputType.number,
+                          textInputAction: TextInputAction.next,
+                        ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        //boilingPoint
+                        TextFormField(
+                            initialValue: _initValues['boilingPoint'] != 0
+                                ? _initValues['boilingPoint'].toString()
+                                : '',
+                            onSaved: (value) => {
+                                  if (value != null && value.isNotEmpty)
+                                    {
+                                      _tempChemical.boilingPoint =
+                                          double.parse(value),
+                                      _tempChemical.id =
+                                          _initValues['id'].toString(),
+                                    }
+                                },
+                            textAlign: TextAlign.center,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return "Enter weight";
+                              } else if (double.tryParse(value) == null) {
+                                return "Enter weight in number format";
+                              } else if (double.parse(value) <= 0) {
+                                return "Weight has to be greater than 0";
+                              }
+                              return null;
+                            },
+                            decoration: const InputDecoration(
+                              labelText: "Boiling Point",
+                            ),
+                            keyboardType: TextInputType.number,
+                            textInputAction: TextInputAction.next),
+                        const SizedBox(
+                          height: 20,
+                        ),
+
+                        //meltingPoint
+                        TextFormField(
+                          initialValue: _initValues['meltingPoint'] != 0
+                              ? _initValues['boilingPoint'].toString()
+                              : '',
+                          onSaved: (value) => {
+                            if (value != null && value.isNotEmpty)
+                              {
+                                _tempChemical.meltingPoint =
+                                    double.parse(value),
+                                _tempChemical.id = _initValues['id'].toString(),
+                              }
+                          },
+                          textAlign: TextAlign.center,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return "Enter weight";
+                            } else if (double.tryParse(value) == null) {
+                              return "Enter weight in number format";
+                            } else if (double.parse(value) <= 0) {
+                              return "Weight has to be greater than 0";
+                            }
+                            return null;
+                          },
+                          decoration: const InputDecoration(
+                            labelText: "Melting Point",
+                          ),
+                          keyboardType: TextInputType.number,
+                          textInputAction: TextInputAction.done,
+                          onFieldSubmitted: (_) => _saveForm(),
+                        ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
