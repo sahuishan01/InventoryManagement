@@ -102,9 +102,10 @@ class _AuthenticationState extends State<Authentication> {
         } else if (err.toString().contains('INVALID_PASSWORD')) {
           errorMessage = "Invalid Password ";
         }
+        print(err);
         _showError(errorMessage);
       } catch (err) {
-        const errorMessage = 'Something went wrong, please try again';
+        const errorMessage = 'Network error!';
         _showError(errorMessage);
       }
       setState(() {
@@ -181,8 +182,9 @@ class _AuthenticationState extends State<Authentication> {
                                 },
                                 autovalidateMode:
                                     AutovalidateMode.onUserInteraction,
+                                textInputAction: TextInputAction.next,
                                 onSaved: (value) {
-                                  _authData['email'] = value as String;
+                                  _authData['email'] = value.toString().trim();
                                 },
                               ),
                             ),

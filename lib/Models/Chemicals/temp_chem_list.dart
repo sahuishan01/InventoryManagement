@@ -32,7 +32,7 @@ class ChemList with ChangeNotifier {
             description: value['description'],
             state: value['state'],
             grade: value['grade'],
-            hazard: value['hazard'].toString().split(', '),
+            hazard: List<String>.from(value['hazard']),
             assay: value['assay'],
             density: value['density'],
             boilingPoint: value['boilingPoint'],

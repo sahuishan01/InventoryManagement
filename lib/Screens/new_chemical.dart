@@ -1,3 +1,5 @@
+import 'package:flutter_application_1/Models/CustomColors.dart';
+
 import '../Models/Chemicals/temp_chem_list.dart';
 
 import 'package:flutter/material.dart';
@@ -132,8 +134,73 @@ class _NewChemicalState extends State<NewChemical> {
     super.didChangeDependencies();
   }
 
+//drop down
+  List<String> hazardList = [];
+  List<Widget> dropDownWidgetList = [];
+
+  void addDropDown(dropDown) {
+    setState(() {
+      dropDownWidgetList.add(dropDown);
+    });
+  }
+
+  void deleteDropDown() {
+    setState(() {
+      dropDownWidgetList.removeLast();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    final Size deviceSize = MediaQuery.of(context).size;
+
+    final dropDown = SizedBox(
+      height: deviceSize.height * 0.02,
+      child: DropdownButtonFormField(
+        elevation: 5,
+        items: const [
+          DropdownMenuItem(
+            value: 'asphyxiants',
+            child: Text('asphyxiants'),
+          ),
+          DropdownMenuItem(
+            value: 'Corrosives',
+            child: Text('Corrosives'),
+          ),
+          DropdownMenuItem(
+            value: 'Irritants',
+            child: Text('Irritants'),
+          ),
+          DropdownMenuItem(
+            value: 'Sensitizers',
+            child: Text('Sensitizers'),
+          ),
+          DropdownMenuItem(
+            value: 'Carcinogens',
+            child: Text('Carcinogens'),
+          ),
+          DropdownMenuItem(
+            value: 'Mutagens',
+            child: Text('Mutagens'),
+          ),
+          DropdownMenuItem(
+            value: 'Teratogens',
+            child: Text('Teratogens'),
+          ),
+          DropdownMenuItem(
+            value: 'Reactive',
+            child: Text('Reactive'),
+          ),
+          DropdownMenuItem(
+            value: 'flammable',
+            child: Text('Flammable'),
+          ),
+        ],
+        onSaved: (newValue) =>
+            hazardList.add(newValue.toString().toUpperCase()),
+        onChanged: ((value) {}),
+      ),
+    );
     double deviceHeight = MediaQuery.of(context).size.height;
     double deviceWidth = MediaQuery.of(context).size.width;
     AppBar appBar = AppBar(
@@ -148,7 +215,6 @@ class _NewChemicalState extends State<NewChemical> {
         )
       ],
     );
-    // double appBarHeight = appBar.preferredSize.height;
 
     return Scaffold(
       appBar: appBar,
@@ -220,11 +286,12 @@ class _NewChemicalState extends State<NewChemical> {
                         ),
                         //formula
                         TextFormField(
-                          initialValue: _initValues['formula'].toString(),
+                          initialValue:
+                              _initValues['formula'].toString().toUpperCase(),
                           onSaved: (value) => {
                             if (value != null && value.isNotEmpty)
                               {
-                                _tempChemical.formula = value,
+                                _tempChemical.formula = value.toUpperCase(),
                                 _tempChemical.id = _initValues['id'].toString(),
                               }
                           },
@@ -237,8 +304,6 @@ class _NewChemicalState extends State<NewChemical> {
                           ),
                           textInputAction: TextInputAction.next,
                           focusNode: _formulaFocus,
-                          // onFieldSubmitted: (_) =>
-                          //     Focus.of(context).requestFocus(_molWeightFocus),
                         ),
                         const SizedBox(
                           height: 20,
@@ -352,6 +417,40 @@ class _NewChemicalState extends State<NewChemical> {
                           ),
                           keyboardType: TextInputType.name,
                           textInputAction: TextInputAction.next,
+                        ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        SizedBox(
+                          height: deviceHeight * 0.3,
+                          width: deviceWidth,
+                          child: GridView.count(
+                            crossAxisCount: 4,
+                            children: [
+                              ...dropDownWidgetList,
+                              ElevatedButton(
+                                style: ButtonStyle(
+                                    alignment: Alignment.center,
+                                    backgroundColor: MaterialStatePropertyAll(
+                                        Colors.green.shade400)),
+                                onPressed: () => addDropDown(dropDown),
+                                child: const Text(
+                                  "Click to add hazard option",
+                                  style: TextStyle(color: Colors.black),
+                                ),
+                              ),
+                              ElevatedButton(
+                                  style: ButtonStyle(
+                                      alignment: Alignment.center,
+                                      backgroundColor: MaterialStatePropertyAll(
+                                          Palette.darkRed.shade300)),
+                                  onPressed: deleteDropDown,
+                                  child: const Text(
+                                    "Click to delete last hazard option",
+                                    style: TextStyle(color: Colors.white),
+                                  )),
+                            ],
+                          ),
                         ),
                         const SizedBox(
                           height: 20,
