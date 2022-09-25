@@ -14,6 +14,23 @@ class ChemList with ChangeNotifier {
     return [..._chemicalList];
   }
 
+  // Future<void> addHazards() async {
+  //   final url = Uri.parse(
+  //       'https://inventory-db0eb-default-rtdb.asia-southeast1.firebasedatabase.app/hazards/environmental.json?auth=$authToken');
+  //   try {
+  //     await http.put(
+  //       url,
+  //       body: json.encode({
+  //         'url':
+  //             'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b9/GHS-pictogram-pollu.svg/1200px-GHS-pictogram-pollu.svg.png'
+  //       }),
+  //     );
+  //     print('done');
+  //   } catch (err) {
+  //     rethrow;
+  //   }
+  // }
+
   Future<void> getLoadedData() async {
     final url = Uri.parse(
         'https://inventory-db0eb-default-rtdb.asia-southeast1.firebasedatabase.app/chemicalList.json?auth=$authToken');

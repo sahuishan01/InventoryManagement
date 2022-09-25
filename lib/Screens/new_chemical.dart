@@ -105,6 +105,7 @@ class _NewChemicalState extends State<NewChemical> {
   }
 
   var _isInit = true;
+  bool init = false;
 
   @override
   void didChangeDependencies() {
@@ -118,7 +119,7 @@ class _NewChemicalState extends State<NewChemical> {
         _initValues = {
           'state': _tempChemical.state,
           'grade': _tempChemical.grade,
-          'hazard': _tempChemical.hazard.join(', '),
+          'hazard': _tempChemical.hazard,
           'assay': _tempChemical.assay,
           'density': _tempChemical.density,
           'meltingPoint': _tempChemical.meltingPoint,
@@ -130,6 +131,7 @@ class _NewChemicalState extends State<NewChemical> {
           'molWeight': _tempChemical.molWeight.toString(),
         };
       }
+      hazardList = _tempChemical.hazard;
     }
     _isInit = false;
     super.didChangeDependencies();
@@ -138,16 +140,33 @@ class _NewChemicalState extends State<NewChemical> {
 //drop down
   List<String> hazardList = []; //storing list of hazards submitted by the user
   List<Widget> dropDownWidgetList = [];
-
+  int count = 0; //for keeping track of number of hazards added
   void addDropDown(dropDown) {
-    setState(() {
-      dropDownWidgetList.add(dropDown);
-    });
+    count += 1;
+    if (count > 6) {
+      showDialog(
+          context: context,
+          builder: (ctx) => AlertDialog(
+                title: const Text('An error Occurred'),
+                content: const Text('Can not add more than 6 hazard options'),
+                actions: <Widget>[
+                  TextButton(
+                    onPressed: () => Navigator.of(ctx).pop(),
+                    child: const Text('Okay'),
+                  ),
+                ],
+              ));
+    } else {
+      setState(() {
+        dropDownWidgetList.add(dropDown);
+      });
+    }
   }
 
   String? value;
 
   void deleteDropDown() {
+    count -= 1;
     setState(() {
       dropDownWidgetList.removeLast();
     });
@@ -158,35 +177,62 @@ class _NewChemicalState extends State<NewChemical> {
     final Size deviceSize = MediaQuery.of(context).size;
 
     final hazardsList = [
-      'asphyxiants',
-      'corrosives',
-      'irritants',
-      'sensitizers',
-      'carcinogens',
-      'mutagens',
-      'teratogens',
+      'corrosive',
+      'environmental',
+      'flammable',
+      'irritant',
       'reactive',
-      'flammable'
+      'toxic',
     ];
     DropdownMenuItem<String> buildMenuItem(String item) => DropdownMenuItem(
           value: item,
-          child: Text(
-            item,
-            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+          child: FittedBox(
+            fit: BoxFit.fitWidth,
+            child: Text(
+              item,
+              style:
+                  const TextStyle(fontWeight: FontWeight.normal, fontSize: 18),
+            ),
           ),
         );
     final dropDown = SizedBox(
-      height: deviceSize.height * 0.02,
-      width: deviceSize.width,
       child: DropdownButtonFormField(
         value: value,
         elevation: 5,
         items: hazardsList.map(buildMenuItem).toList(),
-        onSaved: (newValue) =>
-            hazardList.add(newValue.toString().toUpperCase()),
+        onSaved: (newValue) {
+          if (newValue != null) {
+            hazardList.add(newValue.toString());
+          }
+        },
         onChanged: (value) => setState(() => this.value = value.toString()),
       ),
     );
+
+//check for editing existing element if hazardList is empty or not
+    if (hazardList.isNotEmpty && init == false) {
+      for (var element in hazardList) {
+        count += 1;
+        dropDownWidgetList.add(
+          SizedBox(
+            width: deviceSize.width,
+            child: DropdownButtonFormField(
+              value: element[0] + element.substring(1).toLowerCase(),
+              elevation: 5,
+              items: hazardsList.map(buildMenuItem).toList(),
+              onSaved: (newValue) {
+                if (newValue != null) {
+                  hazardList.add(newValue.toString().toLowerCase());
+                }
+              },
+              onChanged: (value) =>
+                  setState(() => this.value = value.toString()),
+            ),
+          ),
+        );
+      }
+      init = true;
+    }
     double deviceHeight = MediaQuery.of(context).size.height;
     double deviceWidth = MediaQuery.of(context).size.width;
     AppBar appBar = AppBar(
@@ -272,8 +318,7 @@ class _NewChemicalState extends State<NewChemical> {
                         ),
                         //formula
                         TextFormField(
-                          initialValue:
-                              _initValues['formula'].toString().toUpperCase(),
+                          initialValue: _initValues['formula'].toString(),
                           onSaved: (value) => {
                             if (value != null && value.isNotEmpty)
                               {
@@ -380,66 +425,50 @@ class _NewChemicalState extends State<NewChemical> {
                           height: 20,
                         ),
                         //hazard
-                        // TextFormField(
-                        //   initialValue: _initValues['hazard'].toString(),
-                        //   onSaved: (value) => {
-                        //     if (value != null && value.isNotEmpty)
-                        //       {
-                        //         value.split(",").forEach((element) {
-                        //           _tempChemical.hazard.add(element.trim());
-                        //         }),
-                        //         _tempChemical.id = _initValues['id'].toString(),
-                        //       }
-                        //   },
-                        //   textAlign: TextAlign.center,
-                        //   validator: (value) {
-                        //     if (value == null || value.isEmpty) {
-                        //       return "Enter hazards";
-                        //     }
-                        //     return null;
-                        //   },
-                        //   decoration: const InputDecoration(
-                        //     labelText: "Hazards",
-                        //   ),
-                        //   keyboardType: TextInputType.name,
-                        //   textInputAction: TextInputAction.next,
-                        // ),
-                        // const SizedBox(
-                        //   height: 20,
-                        // ),
+
                         FittedBox(
                           child: SizedBox(
-                            height: deviceHeight * 0.3,
                             width: deviceWidth,
-                            child: GridView.count(
-                              mainAxisSpacing: 10,
-                              crossAxisSpacing: 10,
-                              crossAxisCount: 3,
-                              children: [
-                                ...dropDownWidgetList,
-                                ElevatedButton(
-                                  style: ButtonStyle(
-                                      alignment: Alignment.center,
-                                      backgroundColor: MaterialStatePropertyAll(
-                                          Colors.green.shade400)),
-                                  onPressed: () => addDropDown(dropDown),
-                                  child: const Text(
-                                    "Click to add hazard option",
-                                    style: TextStyle(color: Colors.black),
-                                  ),
-                                ),
-                                ElevatedButton(
+                            height: deviceHeight * 0.18,
+                            child: Scrollbar(
+                              trackVisibility: true,
+                              child: GridView.count(
+                                mainAxisSpacing: 10,
+                                crossAxisSpacing: 10,
+                                crossAxisCount: 3,
+                                childAspectRatio: deviceHeight * 0.002,
+                                children: [
+                                  ...dropDownWidgetList,
+                                  ElevatedButton(
                                     style: ButtonStyle(
                                         alignment: Alignment.center,
                                         backgroundColor:
                                             MaterialStatePropertyAll(
-                                                Palette.darkRed.shade300)),
-                                    onPressed: deleteDropDown,
+                                                Colors.green.shade400)),
+                                    onPressed: () => addDropDown(dropDown),
                                     child: const Text(
-                                      "Click to delete last hazard option",
-                                      style: TextStyle(color: Colors.white),
-                                    )),
-                              ],
+                                      "Click to add hazard option",
+                                      style: TextStyle(color: Colors.black),
+                                    ),
+                                  ),
+                                  dropDownWidgetList.isNotEmpty
+                                      ? ElevatedButton(
+                                          style: ButtonStyle(
+                                              alignment: Alignment.center,
+                                              backgroundColor:
+                                                  MaterialStatePropertyAll(
+                                                      Palette
+                                                          .darkRed.shade300)),
+                                          onPressed: deleteDropDown,
+                                          child: const Text(
+                                            "Click to delete last hazard option",
+                                            style:
+                                                TextStyle(color: Colors.white),
+                                          ),
+                                        )
+                                      : const SizedBox(),
+                                ],
+                              ),
                             ),
                           ),
                         ),

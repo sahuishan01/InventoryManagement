@@ -3,11 +3,30 @@ import '../Models/Chemicals/temp_chem_list.dart';
 import 'package:provider/provider.dart';
 import '../Screens/new_chemical.dart';
 
-class SingleChemical extends StatelessWidget {
+class SingleChemical extends StatefulWidget {
   const SingleChemical({Key? key}) : super(key: key);
 
   static const routeName = '/single-chemical';
+
+  @override
+  State<SingleChemical> createState() => _SingleChemicalState();
+}
+
+class _SingleChemicalState extends State<SingleChemical> {
   // final String chemName;
+  List<Widget> singleHazardWidget = [];
+
+//display hazard images
+  bool _loadImage = false;
+  addImage(element) {
+    setState(
+      () => singleHazardWidget.add(
+        Image.asset(
+          'assets/images/$element.png',
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -23,13 +42,22 @@ class SingleChemical extends StatelessWidget {
     final bool isAdmin = routeArgs['isAdmin'] as bool;
 
     final hazards = element.hazard;
-    List<Widget> singleHazardWidget = [];
 
-    for (var element in hazards) {
-      singleHazardWidget.add(Center(child: Text(element)));
+//get images of hazards
+
+    if (!_loadImage) {
+      for (var element in hazards) {
+        addImage(element);
+      }
     }
+
+    _loadImage = true;
+
     final appBar = AppBar(title: Text(element.name.toUpperCase()));
     Size deviceSize = MediaQuery.of(context).size;
+
+//body
+
     return Scaffold(
       appBar: appBar,
       body: Center(
@@ -41,11 +69,16 @@ class SingleChemical extends StatelessWidget {
               mainAxisSize: MainAxisSize.max,
               children: [
                 Expanded(
-                    child: Center(child: Text(element.formula.toUpperCase()))),
+                  child: Center(
+                    child: Text(element.formula),
+                  ),
+                ),
                 Expanded(
                   child: GridView.count(
                     crossAxisCount: 3,
-                    children: [...singleHazardWidget],
+                    children: [
+                      ...singleHazardWidget,
+                    ],
                   ),
                 ),
                 const SizedBox(
