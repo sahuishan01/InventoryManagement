@@ -22,7 +22,7 @@ class SingleChemical extends StatelessWidget {
         Provider.of<ChemList>(context, listen: false).findById(routeArgs['id']);
     final bool isAdmin = routeArgs['isAdmin'] as bool;
 
-    final hazards = element.hazard[0].split(" ");
+    final hazards = element.hazard;
     List<Widget> singleHazardWidget = [];
 
     for (var element in hazards) {
