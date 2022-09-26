@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 import '../Models/auth.dart';
 import '../Widgets/login/signin_text.dart';
 import '../Models/http_exception.dart';
@@ -112,6 +113,10 @@ class _AuthenticationState extends State<Authentication> {
         _isLoading = false;
       });
     }
+  }
+
+  Future<void> _contactUs() async {
+    await launchUrlString("mailto:ishan2001.s@gmail.com");
   }
 
   @override
@@ -299,6 +304,10 @@ class _AuthenticationState extends State<Authentication> {
                             )
                           ],
                         ),
+                      ),
+                      TextButton(
+                        onPressed: _contactUs,
+                        child: const Text("Contact us"),
                       ),
                     ],
                   ),
@@ -663,6 +672,10 @@ class _AuthenticationState extends State<Authentication> {
                             )
                           ],
                         ),
+                      ),
+                      TextButton(
+                        onPressed: _contactUs,
+                        child: const Text("Contact us"),
                       ),
                     ],
                   ),

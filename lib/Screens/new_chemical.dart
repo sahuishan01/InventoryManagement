@@ -1,10 +1,11 @@
-import 'package:flutter_application_1/Models/CustomColors.dart';
+import '../Models/CustomColors.dart';
 
 import '../Models/Chemicals/temp_chem_list.dart';
 
 import 'package:flutter/material.dart';
 import '../Models/Chemicals/temp_chem_model.dart';
 import 'package:provider/provider.dart';
+import '../Models/auth.dart';
 
 class NewChemical extends StatefulWidget {
   static const routeName = "/new-element";
@@ -70,7 +71,6 @@ class _NewChemicalState extends State<NewChemical> {
     });
     if (_tempChemical.id.isEmpty) {
       try {
-        _tempChemical.hazard = hazardList;
         await Provider.of<ChemList>(context, listen: false)
             .addElement(_tempChemical);
         setState(() {
@@ -95,6 +95,8 @@ class _NewChemicalState extends State<NewChemical> {
         };
       }
     } else {
+      _tempChemical.hazard = hazardList;
+
       await Provider.of<ChemList>(context, listen: false)
           .updateElement(_tempChemical, _tempChemical.id);
     }
@@ -142,8 +144,7 @@ class _NewChemicalState extends State<NewChemical> {
   List<Widget> dropDownWidgetList = [];
   int count = 0; //for keeping track of number of hazards added
   void addDropDown(dropDown) {
-    count += 1;
-    if (count > 6) {
+    if (count > 5) {
       showDialog(
           context: context,
           builder: (ctx) => AlertDialog(
@@ -159,6 +160,7 @@ class _NewChemicalState extends State<NewChemical> {
     } else {
       setState(() {
         dropDownWidgetList.add(dropDown);
+        count = dropDownWidgetList.length;
       });
     }
   }
@@ -166,9 +168,9 @@ class _NewChemicalState extends State<NewChemical> {
   String? value;
 
   void deleteDropDown() {
-    count -= 1;
     setState(() {
       dropDownWidgetList.removeLast();
+      count = dropDownWidgetList.length;
     });
   }
 
@@ -212,7 +214,6 @@ class _NewChemicalState extends State<NewChemical> {
 //check for editing existing element if hazardList is empty or not
     if (hazardList.isNotEmpty && init == false) {
       for (var element in hazardList) {
-        count += 1;
         dropDownWidgetList.add(
           SizedBox(
             width: deviceSize.width,
@@ -231,6 +232,7 @@ class _NewChemicalState extends State<NewChemical> {
           ),
         );
       }
+      hazardList = [];
       init = true;
     }
     double deviceHeight = MediaQuery.of(context).size.height;
@@ -244,7 +246,14 @@ class _NewChemicalState extends State<NewChemical> {
         IconButton(
           onPressed: _saveForm,
           icon: const Icon(Icons.save_alt_outlined),
-        )
+        ),
+        IconButton(
+          onPressed: () {
+            Navigator.of(context).pushReplacementNamed('/');
+            Provider.of<Auth>(context, listen: false).logout();
+          },
+          icon: const Icon(Icons.logout_outlined),
+        ),
       ],
     );
 
@@ -304,10 +313,10 @@ class _NewChemicalState extends State<NewChemical> {
                               }
                           },
                           validator: (value) => value!.isEmpty
-                              ? "Please enter the description of chemical"
+                              ? "Please enter the url of chemical description"
                               : null,
                           decoration: const InputDecoration(
-                            labelText: "Description",
+                            labelText: "Url",
                           ),
                           textAlign: TextAlign.center,
                           textInputAction: TextInputAction.next,

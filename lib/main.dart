@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/Models/auth.dart';
+import '../Models/auth.dart';
 import './Screens/authentication.dart';
 import './Screens/new_chemical.dart';
 import './Screens/chemical_list.dart';
@@ -58,7 +58,7 @@ class MyApp extends StatelessWidget {
           routes: {
             Authentication.routeName: (ctx) => const Authentication(),
             ChemicalList.routeName: (ctx) => const ChemicalList(),
-            SingleChemical.routeName: (ctx) => SingleChemical(),
+            SingleChemical.routeName: (ctx) => const SingleChemical(),
             NewChemical.routeName: (ctx) => const NewChemical(),
           },
         ),

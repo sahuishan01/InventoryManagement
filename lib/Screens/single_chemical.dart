@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import '../Models/Chemicals/temp_chem_list.dart';
 import 'package:provider/provider.dart';
-import '../Screens/new_chemical.dart';
+import '../Models/auth.dart';
+import './new_chemical.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class SingleChemical extends StatefulWidget {
   const SingleChemical({Key? key}) : super(key: key);
@@ -28,8 +30,32 @@ class _SingleChemicalState extends State<SingleChemical> {
     );
   }
 
+  Future<void> _followLink(url) async {
+    final uri = Uri.parse(url);
+    try {
+      if (!await launchUrl(uri)) {
+        throw 'Could not launch $url';
+      }
+    } catch (err) {
+      showDialog(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: const Text('An error Occurred'),
+          content: const Text("Could not find the chemical page"),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.of(ctx).pop(),
+              child: const Text('Okay'),
+            ),
+          ],
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    singleHazardWidget = [];
     final scaffoldContext = ScaffoldMessenger.of(context);
     void popScreen() {
       Navigator.pop(context, false);
@@ -53,7 +79,18 @@ class _SingleChemicalState extends State<SingleChemical> {
 
     _loadImage = true;
 
-    final appBar = AppBar(title: Text(element.name.toUpperCase()));
+    final appBar = AppBar(
+      title: Text(element.name.toUpperCase()),
+      actions: <Widget>[
+        IconButton(
+          onPressed: () {
+            Navigator.of(context).pushReplacementNamed('/');
+            Provider.of<Auth>(context, listen: false).logout();
+          },
+          icon: const Icon(Icons.logout_outlined),
+        ),
+      ],
+    );
     Size deviceSize = MediaQuery.of(context).size;
 
 //body
@@ -63,26 +100,325 @@ class _SingleChemicalState extends State<SingleChemical> {
       body: Center(
         child: SingleChildScrollView(
           child: SizedBox(
-            height: deviceSize.height - appBar.preferredSize.height,
+            height: deviceSize.height -
+                appBar.preferredSize.height -
+                MediaQuery.of(context).viewPadding.top,
             width: deviceSize.width,
             child: Column(
               mainAxisSize: MainAxisSize.max,
               children: [
-                Expanded(
-                  child: Center(
-                    child: Text(element.formula),
+                Padding(
+                  padding: EdgeInsets.only(top: deviceSize.height * 0.03),
+                  child: const Text(
+                    'Specifications',
+                    style: TextStyle(
+                        fontFamily: 'Oswald',
+                        fontWeight: FontWeight.bold,
+                        fontSize: 30),
                   ),
                 ),
-                Expanded(
-                  child: GridView.count(
-                    crossAxisCount: 3,
-                    children: [
-                      ...singleHazardWidget,
+                Padding(
+                  padding: EdgeInsets.symmetric(
+                      horizontal: deviceSize.width * 0.05,
+                      vertical: deviceSize.height * 0.03),
+                  child: Table(
+                    defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+                    columnWidths: const {
+                      0: FlexColumnWidth(6),
+                      1: FlexColumnWidth(5)
+                    },
+                    children: <TableRow>[
+//molecular formula
+                      TableRow(
+                        children: <Widget>[
+                          Padding(
+                            padding: EdgeInsets.symmetric(
+                                vertical: deviceSize.height * 0.015),
+                            child: const Center(
+                              child: FittedBox(
+                                child: Text(
+                                  'Molecular Formula',
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 20),
+                                ),
+                              ),
+                            ),
+                          ),
+                          TableCell(
+                            child: Center(
+                              child: Text(
+                                element.formula,
+                                style: const TextStyle(fontSize: 20),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+
+//molecular weight
+                      TableRow(
+                        children: <Widget>[
+                          Padding(
+                            padding: EdgeInsets.symmetric(
+                                vertical: deviceSize.height * 0.015),
+                            child: const Center(
+                              child: FittedBox(
+                                child: Text(
+                                  'Molecular weight',
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 20),
+                                ),
+                              ),
+                            ),
+                          ),
+                          TableCell(
+                            child: Center(
+                              child: Text(
+                                '${element.molWeight} mol',
+                                style: const TextStyle(fontSize: 20),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+
+//element state
+                      TableRow(
+                        children: <Widget>[
+                          Padding(
+                            padding: EdgeInsets.symmetric(
+                                vertical: deviceSize.height * 0.015),
+                            child: const Center(
+                              child: FittedBox(
+                                child: Text(
+                                  'State',
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 20),
+                                ),
+                              ),
+                            ),
+                          ),
+                          TableCell(
+                            child: Center(
+                              child: Text(
+                                '${element.state} mol',
+                                style: const TextStyle(fontSize: 20),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+
+//Boiling temperature
+                      TableRow(
+                        children: <Widget>[
+                          Padding(
+                            padding: EdgeInsets.symmetric(
+                                vertical: deviceSize.height * 0.015),
+                            child: const Center(
+                              child: FittedBox(
+                                child: Text(
+                                  'Boiling Temp.',
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 20),
+                                ),
+                              ),
+                            ),
+                          ),
+                          TableCell(
+                            child: Center(
+                              child: Text(
+                                '${element.boilingPoint} ℃',
+                                style: const TextStyle(fontSize: 20),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+//Melting temperature
+                      TableRow(
+                        children: <Widget>[
+                          Padding(
+                            padding: EdgeInsets.symmetric(
+                                vertical: deviceSize.height * 0.015),
+                            child: const Center(
+                              child: FittedBox(
+                                child: Text(
+                                  'Melting Temp.',
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 20),
+                                ),
+                              ),
+                            ),
+                          ),
+                          TableCell(
+                            child: Center(
+                              child: Text(
+                                '${element.meltingPoint} ℃',
+                                style: const TextStyle(fontSize: 20),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+//Density
+                      TableRow(
+                        children: <Widget>[
+                          Padding(
+                            padding: EdgeInsets.symmetric(
+                                vertical: deviceSize.height * 0.015),
+                            child: const Center(
+                              child: FittedBox(
+                                child: Text(
+                                  'Density',
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 20),
+                                ),
+                              ),
+                            ),
+                          ),
+                          TableCell(
+                            child: Center(
+                              child: Text(
+                                '${element.density} gm/cc',
+                                style: const TextStyle(fontSize: 20),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+//Grade
+                      TableRow(
+                        children: <Widget>[
+                          Padding(
+                            padding: EdgeInsets.symmetric(
+                                vertical: deviceSize.height * 0.015),
+                            child: const Center(
+                              child: FittedBox(
+                                child: Text(
+                                  'Grade',
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 20),
+                                ),
+                              ),
+                            ),
+                          ),
+                          TableCell(
+                            child: Center(
+                              child: Text(
+                                element.grade,
+                                style: const TextStyle(fontSize: 20),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+
+//%assay
+                      element.state.toLowerCase() == 'liquid'
+                          ? TableRow(
+                              children: <Widget>[
+                                Padding(
+                                  padding: EdgeInsets.symmetric(
+                                      vertical: deviceSize.height * 0.015),
+                                  child: const Center(
+                                    child: FittedBox(
+                                      child: Text(
+                                        '% Assay',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 20),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                TableCell(
+                                  child: Center(
+                                    child: Text(
+                                      element.assay,
+                                      style: const TextStyle(fontSize: 20),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            )
+                          : TableRow(
+                              children: <Widget>[
+                                Padding(
+                                  padding: EdgeInsets.symmetric(
+                                      vertical: deviceSize.height * 0.015),
+                                  child: const Center(
+                                    child: FittedBox(
+                                      child: Text(
+                                        '% Assay',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 20),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                const TableCell(
+                                  child: Center(
+                                    child: Text(
+                                      'N.A',
+                                      style: TextStyle(fontSize: 20),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+//hazards
+                      TableRow(
+                        children: <Widget>[
+                          Padding(
+                            padding: EdgeInsets.symmetric(
+                                vertical: deviceSize.height * 0.015),
+                            child: const Center(
+                              child: FittedBox(
+                                child: Text(
+                                  'Hazards',
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 20),
+                                ),
+                              ),
+                            ),
+                          ),
+                          TableCell(
+                            child: Container(
+                              alignment: Alignment.center,
+                              height: element.hazard.length <= 3
+                                  ? deviceSize.height * 0.065
+                                  : deviceSize.height * 0.13,
+                              child: GridView.count(
+                                crossAxisCount: 3,
+                                children: [
+                                  ...singleHazardWidget,
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ],
                   ),
                 ),
                 const SizedBox(
                   height: 10,
+                ),
+                Center(
+                  child: ElevatedButton(
+                    onPressed: () => _followLink(element.description),
+                    child: const Text('Want to know more?'),
+                  ),
                 ),
                 isAdmin
                     ? Expanded(

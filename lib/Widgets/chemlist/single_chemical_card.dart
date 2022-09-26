@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/Models/Chemicals/temp_chem_model.dart';
+import '../../Models/Chemicals/temp_chem_model.dart';
 import 'package:provider/provider.dart';
 import '../../Screens/single_chemical.dart';
 
