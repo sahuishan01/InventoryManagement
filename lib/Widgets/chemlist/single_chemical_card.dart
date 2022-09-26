@@ -28,36 +28,42 @@ class SingleChemicalCard extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Padding(
-            padding: EdgeInsets.symmetric(
-                vertical: deviceHeight * 0.015, horizontal: deviceWidth * 0.02),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  chemElement.name,
+          Flexible(
+            fit: FlexFit.tight,
+            flex: 3,
+            child: Padding(
+              padding: EdgeInsets.symmetric(
+                  vertical: deviceHeight * 0.015,
+                  horizontal: deviceWidth * 0.02),
+              child: SizedBox(
+                width: deviceWidth,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      chemElement.name,
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      chemElement.formula,
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 8),
-                SizedBox(
-                  width: deviceWidth * 0.4,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        chemElement.formula,
-                      ),
-                      Text(chemElement.molWeight.toString()),
-                    ],
-                  ),
-                )
-              ],
+              ),
             ),
           ),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: deviceWidth * 0.03),
-            child: TextButton(
-              child: const Text("View Chemical"),
-              onPressed: () => selectedElement(context, chemElement.id),
+          Flexible(
+            flex: 3,
+            child: Text('${chemElement.molWeight} mol'),
+          ),
+          Flexible(
+            flex: 3,
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: deviceWidth * 0.03),
+              child: TextButton(
+                child: const Text("View Chemical"),
+                onPressed: () => selectedElement(context, chemElement.id),
+              ),
             ),
           ),
         ],

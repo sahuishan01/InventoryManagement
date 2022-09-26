@@ -340,7 +340,7 @@ class _NewChemicalState extends State<NewChemical> {
                               ? "Please enter the formula of chemical"
                               : null,
                           decoration: const InputDecoration(
-                            labelText: "Formula",
+                            labelText: "Molecular Formula",
                           ),
                           textInputAction: TextInputAction.next,
                           focusNode: _formulaFocus,
@@ -522,14 +522,14 @@ class _NewChemicalState extends State<NewChemical> {
                             if (value == null || value.isEmpty) {
                               return "Enter density";
                             } else if (double.tryParse(value) == null) {
-                              return "Enter weight in number format";
+                              return "Enter density in number format";
                             } else if (double.parse(value) <= 0) {
-                              return "Weight has to be greater than 0";
+                              return "Density has to be greater than 0";
                             }
                             return null;
                           },
                           decoration: const InputDecoration(
-                            labelText: "Element Density",
+                            labelText: "Element Density (in gm/cc)",
                           ),
                           keyboardType: TextInputType.number,
                           textInputAction: TextInputAction.next,
@@ -554,16 +554,14 @@ class _NewChemicalState extends State<NewChemical> {
                             textAlign: TextAlign.center,
                             validator: (value) {
                               if (value == null || value.isEmpty) {
-                                return "Enter weight";
+                                return "Enter Boiling Point";
                               } else if (double.tryParse(value) == null) {
-                                return "Enter weight in number format";
-                              } else if (double.parse(value) <= 0) {
-                                return "Weight has to be greater than 0";
+                                return "Enter Boiling point in number format";
                               }
                               return null;
                             },
                             decoration: const InputDecoration(
-                              labelText: "Boiling Point",
+                              labelText: "Boiling Temperature (in Celsius)",
                             ),
                             keyboardType: TextInputType.number,
                             textInputAction: TextInputAction.next),
@@ -587,16 +585,14 @@ class _NewChemicalState extends State<NewChemical> {
                           textAlign: TextAlign.center,
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return "Enter weight";
+                              return "Enter melting point";
                             } else if (double.tryParse(value) == null) {
-                              return "Enter weight in number format";
-                            } else if (double.parse(value) <= 0) {
-                              return "Weight has to be greater than 0";
+                              return "Enter melting point in number format";
                             }
                             return null;
                           },
                           decoration: const InputDecoration(
-                            labelText: "Melting Point",
+                            labelText: "Melting Temperature (in Celsius)",
                           ),
                           keyboardType: TextInputType.number,
                           textInputAction: TextInputAction.done,

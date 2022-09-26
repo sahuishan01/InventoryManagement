@@ -9,17 +9,12 @@ class SignInText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.symmetric(
-          vertical: deviceHeight * 0.1, horizontal: deviceWidth * 0.1),
-// customizing size and width
-      width: deviceWidth,
+    return Center(
       child: Padding(
         padding: EdgeInsets.only(
-          top: deviceHeight * 0.05,
+          top: (text1 != "SIGN UP") ? deviceHeight * 0.2 : deviceHeight * 0.15,
 //if signup, decrease the gap between the form and sign up header text
           bottom: (text1 != "SIGN UP") ? deviceHeight * 0.05 : 0,
-          left: 30,
         ),
 
         //sign in text

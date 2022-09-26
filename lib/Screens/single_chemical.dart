@@ -204,7 +204,7 @@ class _SingleChemicalState extends State<SingleChemical> {
                           TableCell(
                             child: Center(
                               child: Text(
-                                '${element.state} mol',
+                                element.state,
                                 style: const TextStyle(fontSize: 20),
                               ),
                             ),
