@@ -54,7 +54,9 @@ class ChemList with ChangeNotifier {
             density: value['density'],
             boilingPoint: value['boilingPoint'],
             meltingPoint: value['meltingPoint'],
-            molWeight: double.parse(value['molWeight'].toString()),
+            molWeight: value['molWeight'],
+            bioLab: value['bioLab'],
+            chemLab: value['chemLab'],
           ),
         );
       });
@@ -85,6 +87,8 @@ class ChemList with ChangeNotifier {
             'boilingPoint': value.boilingPoint,
             'meltingPoint': value.meltingPoint,
             'molWeight': value.molWeight,
+            'bioLab': value.bioLab,
+            'chemLab': value.chemLab,
           },
         ),
       );
@@ -113,6 +117,8 @@ class ChemList with ChangeNotifier {
             'boilingPoint': value.boilingPoint,
             'meltingPoint': value.meltingPoint,
             'molWeight': value.molWeight,
+            'bioLab': value.bioLab,
+            'chemLab': value.chemLab,
           },
         ),
       );

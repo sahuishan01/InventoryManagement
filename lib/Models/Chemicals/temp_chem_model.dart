@@ -13,6 +13,8 @@ class ChemModel with ChangeNotifier {
   double molWeight;
   double boilingPoint;
   double meltingPoint;
+  int bioLab;
+  int chemLab;
 
   ChemModel({
     required this.id,
@@ -20,6 +22,8 @@ class ChemModel with ChangeNotifier {
     required this.formula,
     this.description = "",
     this.molWeight = 0,
+    this.chemLab = 0,
+    this.bioLab = 0,
     required this.state,
     required this.grade,
     required this.hazard,

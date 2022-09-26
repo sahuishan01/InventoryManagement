@@ -67,7 +67,7 @@ class _SingleChemicalState extends State<SingleChemical> {
         Provider.of<ChemList>(context, listen: false).findById(routeArgs['id']);
     final bool isAdmin = routeArgs['isAdmin'] as bool;
     final String lab = routeArgs['lab'].toString();
-    print(lab);
+
     final hazards = element.hazard;
 
 //get images of hazards
@@ -431,9 +431,34 @@ class _SingleChemicalState extends State<SingleChemical> {
                                     lab.toLowerCase().contains('chem')
                                 ? Flexible(
                                     child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceAround,
                                     children: [
                                       Column(
-                                        children: const [Text('data')],
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: [
+                                          const Text("Quantity in Bio Lab is"),
+                                          SizedBox(
+                                            height: deviceSize.height * 0.01,
+                                          ),
+                                          Text(element.bioLab.toString())
+                                        ],
+                                      ),
+                                      Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: [
+                                          const Text("Quantity in Chem Lab is"),
+                                          SizedBox(
+                                            height: deviceSize.height * 0.01,
+                                          ),
+                                          Text(element.chemLab.toString())
+                                        ],
                                       )
                                     ],
                                   ))

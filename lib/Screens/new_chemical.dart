@@ -19,6 +19,8 @@ class _NewChemicalState extends State<NewChemical> {
   final _molWeightFocus = FocusNode();
   final _formulaFocus = FocusNode();
   final _form = GlobalKey<FormState>();
+  final TextEditingController _bioController = TextEditingController();
+  final TextEditingController _chemController = TextEditingController();
 
   var _isLoading = false;
   ChemModel _tempChemical = ChemModel(
@@ -34,6 +36,8 @@ class _NewChemicalState extends State<NewChemical> {
     meltingPoint: 0,
     boilingPoint: 0,
     molWeight: 0,
+    bioLab: 0,
+    chemLab: 0,
   );
 
   var _initValues = {
@@ -49,14 +53,39 @@ class _NewChemicalState extends State<NewChemical> {
     'meltingPoint': 0,
     'boilingPoint': 0,
     'molWeight': 0,
+    'bioLab': 0,
+    'chemLab': 0,
   };
   @override
   void dispose() {
     _descriptionFocus.dispose();
     _molWeightFocus.dispose();
     _formulaFocus.dispose();
+    _bioController.dispose();
+    _chemController.dispose();
 
     super.dispose();
+  }
+
+//lab opertaions
+  String lab = '';
+  void labDetails() async {
+    try {
+      lab = await Provider.of<Auth>(context, listen: false).getLab;
+    } catch (error) {
+      showDialog(
+          context: context,
+          builder: (ctx) => AlertDialog(
+                title: const Text('An error Occurred'),
+                content: Text(error.toString()),
+                actions: <Widget>[
+                  TextButton(
+                    onPressed: () => Navigator.of(ctx).pop(),
+                    child: const Text('Okay'),
+                  ),
+                ],
+              ));
+    }
   }
 
   void _saveForm() async {
@@ -108,7 +137,8 @@ class _NewChemicalState extends State<NewChemical> {
 
   var _isInit = true;
   bool init = false;
-
+  int bioCount = 0;
+  int chemCount = 0;
   @override
   void didChangeDependencies() {
     if (_isInit) {
@@ -130,13 +160,53 @@ class _NewChemicalState extends State<NewChemical> {
           'id': _tempChemical.id,
           'formula': _tempChemical.formula,
           'description': _tempChemical.description,
-          'molWeight': _tempChemical.molWeight.toString(),
+          'molWeight': _tempChemical.molWeight,
+          'bioLab': _tempChemical.bioLab,
+          'chemLab': _tempChemical.chemLab,
         };
       }
       hazardList = _tempChemical.hazard;
+
+      bioCount = _tempChemical.bioLab;
+      chemCount = _tempChemical.chemLab;
+
+      _bioController.text = bioCount.toString();
+      _chemController.text = chemCount.toString();
     }
     _isInit = false;
     super.didChangeDependencies();
+  }
+
+  void _incrementCounter(counter) {
+    if (counter.contains('bioLab')) {
+      print('insideBio count');
+      setState(
+        () {
+          bioCount += 1;
+          _bioController.text = bioCount.toString();
+        },
+      );
+      print(bioCount);
+    } else if (counter == 'chemLab') {
+      setState(() {
+        chemCount += 1;
+        _chemController.text = chemCount.toString();
+      });
+    }
+  }
+
+  void _decrementCounter(counter) {
+    if (counter == 'bioLab') {
+      setState(() {
+        bioCount -= 1;
+        _bioController.text = bioCount.toString();
+      });
+    } else if (counter == 'chemLab') {
+      setState(() {
+        chemCount -= 1;
+        _chemController.text = chemCount.toString();
+      });
+    }
   }
 
 //drop down
@@ -256,7 +326,7 @@ class _NewChemicalState extends State<NewChemical> {
         ),
       ],
     );
-
+    labDetails();
     return Scaffold(
       appBar: appBar,
       body: _isLoading
@@ -600,6 +670,146 @@ class _NewChemicalState extends State<NewChemical> {
                         ),
                         const SizedBox(
                           height: 20,
+                        ),
+
+//bio lab
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            SizedBox(
+                              width: deviceWidth * 0.45,
+                              child: Row(
+                                children: [
+                                  lab.toLowerCase().contains('full') ||
+                                          lab.toLowerCase().contains('bio')
+                                      ? Flexible(
+                                          flex: 1,
+                                          child: IconButton(
+                                            icon: const Icon(Icons.remove),
+                                            onPressed: () =>
+                                                _decrementCounter('bioLab'),
+                                          ),
+                                        )
+                                      : const SizedBox(),
+                                  Flexible(
+                                    flex: 3,
+                                    child: TextFormField(
+                                      controller: _bioController,
+                                      onSaved: (value) => {
+                                        if (value != null && value.isNotEmpty)
+                                          {
+                                            _tempChemical.bioLab =
+                                                int.parse(_bioController.text),
+                                            _tempChemical.id =
+                                                _initValues['id'].toString(),
+                                          }
+                                      },
+                                      textAlign: TextAlign.center,
+                                      validator: (value) {
+                                        if (value == null || value.isEmpty) {
+                                          return "Enter total available quantity";
+                                        } else if (int.tryParse(value) ==
+                                            null) {
+                                          return "Enter quantity in whole  number format";
+                                        } else if (int.parse(value) < 0) {
+                                          return "Enter value greater or equal to 0";
+                                        }
+                                        return null;
+                                      },
+                                      decoration: const InputDecoration(
+                                        labelText: "Bio Qty.",
+                                        border: InputBorder.none,
+                                        focusedBorder: InputBorder.none,
+                                        enabledBorder: InputBorder.none,
+                                        errorBorder: InputBorder.none,
+                                        disabledBorder: InputBorder.none,
+                                      ),
+                                      keyboardType: TextInputType.number,
+                                      textInputAction: TextInputAction.next,
+                                    ),
+                                  ),
+                                  lab.toLowerCase().contains('full') ||
+                                          lab.toLowerCase().contains('bio')
+                                      ? Flexible(
+                                          flex: 1,
+                                          child: IconButton(
+                                            icon: const Icon(Icons.add),
+                                            onPressed: () =>
+                                                _incrementCounter('bioLab'),
+                                          ),
+                                        )
+                                      : const SizedBox(),
+                                ],
+                              ),
+                            ),
+                            SizedBox(
+                              width: deviceWidth * 0.45,
+                              child: Row(
+                                children: [
+                                  lab.toLowerCase().contains('full') ||
+                                          lab.toLowerCase().contains('chem')
+                                      ? Flexible(
+                                          flex: 1,
+                                          child: IconButton(
+                                            icon: const Icon(Icons.remove),
+                                            onPressed: () =>
+                                                _decrementCounter('chemLab'),
+                                          ),
+                                        )
+                                      : const SizedBox(),
+                                  Flexible(
+                                    flex: 3,
+                                    child: TextFormField(
+                                      controller: _chemController,
+                                      onSaved: (value) => {
+                                        if (value != null && value.isNotEmpty)
+                                          {
+                                            _tempChemical.chemLab =
+                                                int.parse(_chemController.text),
+                                            _tempChemical.id =
+                                                _initValues['id'].toString(),
+                                          }
+                                      },
+                                      textAlign: TextAlign.center,
+                                      validator: (value) {
+                                        if (value == null || value.isEmpty) {
+                                          return "Enter total available quantity";
+                                        } else if (int.tryParse(value) ==
+                                            null) {
+                                          return "Enter quantity in number format";
+                                        } else if (int.parse(value) < 0) {
+                                          return "Enter value greater or equal to 0";
+                                        }
+                                        return null;
+                                      },
+                                      decoration: const InputDecoration(
+                                        border: InputBorder.none,
+                                        focusedBorder: InputBorder.none,
+                                        enabledBorder: InputBorder.none,
+                                        errorBorder: InputBorder.none,
+                                        disabledBorder: InputBorder.none,
+                                        labelText: "Chem Qty.",
+                                      ),
+                                      keyboardType: TextInputType.number,
+                                      textInputAction: TextInputAction.done,
+                                      onFieldSubmitted: (_) => _saveForm(),
+                                    ),
+                                  ),
+                                  lab.toLowerCase().contains('full') ||
+                                          lab.toLowerCase().contains('chem')
+                                      ? Flexible(
+                                          flex: 1,
+                                          child: IconButton(
+                                            icon: const Icon(Icons.add),
+                                            onPressed: () =>
+                                                _incrementCounter('chemLab'),
+                                          ),
+                                        )
+                                      : const SizedBox(),
+                                ],
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),

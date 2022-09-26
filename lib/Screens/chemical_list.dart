@@ -35,6 +35,7 @@ class _ChemicalListState extends State<ChemicalList> {
       );
       Provider.of<ChemList>(context).getLoadedData().catchError(
         (onError) {
+          print(onError);
           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
             content: Text('Could not load content, try again later'),
           ));
