@@ -43,6 +43,21 @@ class Auth with ChangeNotifier {
     }
   }
 
+  Future<String> get getLab async {
+    final url = Uri.parse(
+        'https://inventory-db0eb-default-rtdb.asia-southeast1.firebasedatabase.app/users/$_userId.json?auth=$_token');
+    try {
+      final response = await http.get(url);
+      final value = json.decode(response.body);
+      if (value['lab'] == null) {
+        return 'N.A.';
+      }
+      return value['lab'].toString();
+    } catch (err) {
+      rethrow;
+    }
+  }
+
   Future<void> _authenticate(String email, String password, String partUrl,
       {String name = '', String studentClass = ''}) async {
     final url = Uri.parse(
@@ -78,7 +93,8 @@ class Auth with ChangeNotifier {
                 'name': name,
                 'class': studentClass,
                 'id': _userId,
-                'isAdmin': false,
+                'isAdmin': true,
+                'lab': 'full',
               },
             ),
           );

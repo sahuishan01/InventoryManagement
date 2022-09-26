@@ -66,7 +66,8 @@ class _SingleChemicalState extends State<SingleChemical> {
     final element =
         Provider.of<ChemList>(context, listen: false).findById(routeArgs['id']);
     final bool isAdmin = routeArgs['isAdmin'] as bool;
-
+    final String lab = routeArgs['lab'].toString();
+    print(lab);
     final hazards = element.hazard;
 
 //get images of hazards
@@ -421,41 +422,62 @@ class _SingleChemicalState extends State<SingleChemical> {
                   ),
                 ),
                 isAdmin
-                    ? Expanded(
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
+                    ? SizedBox(
+                        height: deviceSize.height * 0.2,
+                        child: Column(
                           children: [
-                            IconButton(
-                              onPressed: () => {
-                                Navigator.of(context).pushReplacementNamed(
-                                    NewChemical.routeName,
-                                    arguments: [element.id]),
-                              },
-                              icon: const Icon(Icons.edit),
-                            ),
-                            const SizedBox(
-                              width: 20,
-                            ),
-                            IconButton(
-                              onPressed: () async {
-                                try {
-                                  await Provider.of<ChemList>(context,
-                                          listen: false)
-                                      .deleteElement(element);
-                                  popScreen();
-                                } catch (err) {
-                                  scaffoldContext.showSnackBar(
-                                    const SnackBar(
-                                      content: Text(
-                                        "Deletion failed",
-                                        textAlign: TextAlign.center,
-                                      ),
-                                    ),
-                                  );
-                                }
-                              },
-                              icon: const Icon(Icons.delete_forever_outlined),
-                            ),
+                            lab.toLowerCase().contains('full') ||
+                                    lab.toLowerCase().contains('bio') ||
+                                    lab.toLowerCase().contains('chem')
+                                ? Flexible(
+                                    child: Row(
+                                    children: [
+                                      Column(
+                                        children: const [Text('data')],
+                                      )
+                                    ],
+                                  ))
+                                : const SizedBox(),
+                            Flexible(
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  IconButton(
+                                    onPressed: () => {
+                                      Navigator.of(context)
+                                          .pushReplacementNamed(
+                                              NewChemical.routeName,
+                                              arguments: [element.id]),
+                                    },
+                                    icon: const Icon(Icons.edit),
+                                  ),
+                                  const SizedBox(
+                                    width: 20,
+                                  ),
+                                  IconButton(
+                                    onPressed: () async {
+                                      try {
+                                        await Provider.of<ChemList>(context,
+                                                listen: false)
+                                            .deleteElement(element);
+                                        popScreen();
+                                      } catch (err) {
+                                        scaffoldContext.showSnackBar(
+                                          const SnackBar(
+                                            content: Text(
+                                              "Deletion failed",
+                                              textAlign: TextAlign.center,
+                                            ),
+                                          ),
+                                        );
+                                      }
+                                    },
+                                    icon: const Icon(
+                                        Icons.delete_forever_outlined),
+                                  ),
+                                ],
+                              ),
+                            )
                           ],
                         ),
                       )

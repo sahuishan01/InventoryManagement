@@ -152,6 +152,7 @@ class _ChemicalListState extends State<ChemicalList> {
   }
 
   bool isAdmin = false;
+
   void checkAdmin() async {
     try {
       isAdmin = await Provider.of<Auth>(context, listen: false).isAdmin;
@@ -171,9 +172,30 @@ class _ChemicalListState extends State<ChemicalList> {
     }
   }
 
+  String lab = '';
+  void labDetails() async {
+    try {
+      lab = await Provider.of<Auth>(context, listen: false).getLab;
+    } catch (error) {
+      showDialog(
+          context: context,
+          builder: (ctx) => AlertDialog(
+                title: const Text('An error Occurred'),
+                content: Text(error.toString()),
+                actions: <Widget>[
+                  TextButton(
+                    onPressed: () => Navigator.of(ctx).pop(),
+                    child: const Text('Okay'),
+                  ),
+                ],
+              ));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     checkAdmin();
+    labDetails();
     double deviceHeight = MediaQuery.of(context).size.height;
     double deviceWidth = MediaQuery.of(context).size.width;
 
@@ -293,7 +315,7 @@ class _ChemicalListState extends State<ChemicalList> {
                           itemBuilder: (ctx, index) =>
                               ChangeNotifierProvider.value(
                             value: tempList[index],
-                            child: SingleChemicalCard(tempList, isAdmin),
+                            child: SingleChemicalCard(tempList, isAdmin, lab),
                           ),
                         ),
                 ),
