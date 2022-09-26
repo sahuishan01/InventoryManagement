@@ -351,7 +351,6 @@ class _NewChemicalState extends State<NewChemical> {
                         ),
                         //name
                         TextFormField(
-                          autofocus: true,
                           initialValue: _initValues['name'].toString(),
                           onSaved: (value) => {
                             if (value != null && value.isNotEmpty)
@@ -691,43 +690,52 @@ class _NewChemicalState extends State<NewChemical> {
                                           ),
                                         )
                                       : const SizedBox(),
-                                  Flexible(
-                                    flex: 3,
-                                    child: TextFormField(
-                                      controller: _bioController,
-                                      onSaved: (value) => {
-                                        if (value != null && value.isNotEmpty)
-                                          {
-                                            _tempChemical.bioLab =
-                                                int.parse(_bioController.text),
-                                            _tempChemical.id =
-                                                _initValues['id'].toString(),
-                                          }
-                                      },
-                                      textAlign: TextAlign.center,
-                                      validator: (value) {
-                                        if (value == null || value.isEmpty) {
-                                          return "Enter total available quantity";
-                                        } else if (int.tryParse(value) ==
-                                            null) {
-                                          return "Enter quantity in whole  number format";
-                                        } else if (int.parse(value) < 0) {
-                                          return "Enter value greater or equal to 0";
-                                        }
-                                        return null;
-                                      },
-                                      decoration: const InputDecoration(
-                                        labelText: "Bio Qty.",
-                                        border: InputBorder.none,
-                                        focusedBorder: InputBorder.none,
-                                        enabledBorder: InputBorder.none,
-                                        errorBorder: InputBorder.none,
-                                        disabledBorder: InputBorder.none,
-                                      ),
-                                      keyboardType: TextInputType.number,
-                                      textInputAction: TextInputAction.next,
-                                    ),
-                                  ),
+                                  lab.toLowerCase().contains('full') ||
+                                          lab.toLowerCase().contains('bio')
+                                      ? Flexible(
+                                          flex: 3,
+                                          child: TextFormField(
+                                            controller: _bioController,
+                                            onSaved: (value) => {
+                                              if (value != null &&
+                                                  value.isNotEmpty)
+                                                {
+                                                  _tempChemical.bioLab =
+                                                      int.parse(
+                                                          _bioController.text),
+                                                  _tempChemical.id =
+                                                      _initValues['id']
+                                                          .toString(),
+                                                }
+                                            },
+                                            textAlign: TextAlign.center,
+                                            validator: (value) {
+                                              if (value == null ||
+                                                  value.isEmpty) {
+                                                return "Enter total available quantity";
+                                              } else if (int.tryParse(value) ==
+                                                  null) {
+                                                return "Enter quantity in whole  number format";
+                                              } else if (int.parse(value) < 0) {
+                                                return "Enter value greater or equal to 0";
+                                              }
+                                              return null;
+                                            },
+                                            decoration: const InputDecoration(
+                                              labelText: "Bio Qty.",
+                                              border: InputBorder.none,
+                                              focusedBorder: InputBorder.none,
+                                              enabledBorder: InputBorder.none,
+                                              errorBorder: InputBorder.none,
+                                              disabledBorder: InputBorder.none,
+                                            ),
+                                            keyboardType: TextInputType.number,
+                                            textInputAction:
+                                                TextInputAction.next,
+                                          ),
+                                        )
+                                      : Text(
+                                          "Bio Quantity: ${bioCount.toString()}"),
                                   lab.toLowerCase().contains('full') ||
                                           lab.toLowerCase().contains('bio')
                                       ? Flexible(
@@ -757,44 +765,53 @@ class _NewChemicalState extends State<NewChemical> {
                                           ),
                                         )
                                       : const SizedBox(),
-                                  Flexible(
-                                    flex: 3,
-                                    child: TextFormField(
-                                      controller: _chemController,
-                                      onSaved: (value) => {
-                                        if (value != null && value.isNotEmpty)
-                                          {
-                                            _tempChemical.chemLab =
-                                                int.parse(_chemController.text),
-                                            _tempChemical.id =
-                                                _initValues['id'].toString(),
-                                          }
-                                      },
-                                      textAlign: TextAlign.center,
-                                      validator: (value) {
-                                        if (value == null || value.isEmpty) {
-                                          return "Enter total available quantity";
-                                        } else if (int.tryParse(value) ==
-                                            null) {
-                                          return "Enter quantity in number format";
-                                        } else if (int.parse(value) < 0) {
-                                          return "Enter value greater or equal to 0";
-                                        }
-                                        return null;
-                                      },
-                                      decoration: const InputDecoration(
-                                        border: InputBorder.none,
-                                        focusedBorder: InputBorder.none,
-                                        enabledBorder: InputBorder.none,
-                                        errorBorder: InputBorder.none,
-                                        disabledBorder: InputBorder.none,
-                                        labelText: "Chem Qty.",
-                                      ),
-                                      keyboardType: TextInputType.number,
-                                      textInputAction: TextInputAction.done,
-                                      onFieldSubmitted: (_) => _saveForm(),
-                                    ),
-                                  ),
+                                  lab.toLowerCase().contains('full') ||
+                                          lab.toLowerCase().contains('chem')
+                                      ? Flexible(
+                                          flex: 3,
+                                          child: TextFormField(
+                                            controller: _chemController,
+                                            onSaved: (value) => {
+                                              if (value != null &&
+                                                  value.isNotEmpty)
+                                                {
+                                                  _tempChemical.chemLab =
+                                                      int.parse(
+                                                          _chemController.text),
+                                                  _tempChemical.id =
+                                                      _initValues['id']
+                                                          .toString(),
+                                                }
+                                            },
+                                            textAlign: TextAlign.center,
+                                            validator: (value) {
+                                              if (value == null ||
+                                                  value.isEmpty) {
+                                                return "Enter total available quantity";
+                                              } else if (int.tryParse(value) ==
+                                                  null) {
+                                                return "Enter quantity in number format";
+                                              } else if (int.parse(value) < 0) {
+                                                return "Enter value greater or equal to 0";
+                                              }
+                                              return null;
+                                            },
+                                            decoration: const InputDecoration(
+                                              border: InputBorder.none,
+                                              focusedBorder: InputBorder.none,
+                                              enabledBorder: InputBorder.none,
+                                              errorBorder: InputBorder.none,
+                                              disabledBorder: InputBorder.none,
+                                              labelText: "Chem Qty.",
+                                            ),
+                                            keyboardType: TextInputType.number,
+                                            textInputAction:
+                                                TextInputAction.done,
+                                            onFieldSubmitted: (_) =>
+                                                _saveForm(),
+                                          ),
+                                        )
+                                      : Text("Chem Quantity is $chemCount"),
                                   lab.toLowerCase().contains('full') ||
                                           lab.toLowerCase().contains('chem')
                                       ? Flexible(

@@ -93,8 +93,8 @@ class Auth with ChangeNotifier {
                 'name': name,
                 'class': studentClass,
                 'id': _userId,
-                'isAdmin': true,
-                'lab': 'full',
+                'isAdmin': false,
+                'lab': null,
               },
             ),
           );
