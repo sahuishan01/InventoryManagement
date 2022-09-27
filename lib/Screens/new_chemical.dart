@@ -69,24 +69,6 @@ class _NewChemicalState extends State<NewChemical> {
 
 //lab opertaions
   String lab = '';
-  void labDetails() async {
-    try {
-      lab = await Provider.of<Auth>(context, listen: false).getLab;
-    } catch (error) {
-      showDialog(
-          context: context,
-          builder: (ctx) => AlertDialog(
-                title: const Text('An error Occurred'),
-                content: Text(error.toString()),
-                actions: <Widget>[
-                  TextButton(
-                    onPressed: () => Navigator.of(ctx).pop(),
-                    child: const Text('Okay'),
-                  ),
-                ],
-              ));
-    }
-  }
 
   void _saveForm() async {
     final isValid = _form.currentState!.validate();
@@ -143,11 +125,11 @@ class _NewChemicalState extends State<NewChemical> {
   void didChangeDependencies() {
     if (_isInit) {
       if (ModalRoute.of(context)!.settings.arguments != null) {
-        final chemicalId =
-            ModalRoute.of(context)!.settings.arguments as List<String>;
-
-        _tempChemical = Provider.of<ChemList>(context, listen: false)
-            .findById(chemicalId[0]);
+        final routeArgs = ModalRoute.of(context)!.settings.arguments as Map;
+        final chemicalId = routeArgs['id'];
+        lab = routeArgs['lab'];
+        _tempChemical =
+            Provider.of<ChemList>(context, listen: false).findById(chemicalId);
         _initValues = {
           'state': _tempChemical.state,
           'grade': _tempChemical.grade,
@@ -165,6 +147,7 @@ class _NewChemicalState extends State<NewChemical> {
           'chemLab': _tempChemical.chemLab,
         };
       }
+
       hazardList = _tempChemical.hazard;
 
       bioCount = _tempChemical.bioLab;
@@ -326,7 +309,7 @@ class _NewChemicalState extends State<NewChemical> {
         ),
       ],
     );
-    labDetails();
+
     return Scaffold(
       appBar: appBar,
       body: _isLoading

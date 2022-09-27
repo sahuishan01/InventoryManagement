@@ -472,7 +472,10 @@ class _SingleChemicalState extends State<SingleChemical> {
                                       Navigator.of(context)
                                           .pushReplacementNamed(
                                               NewChemical.routeName,
-                                              arguments: [element.id]),
+                                              arguments: {
+                                            'id': element.id,
+                                            'lab': lab
+                                          }),
                                     },
                                     icon: const Icon(Icons.edit),
                                   ),
