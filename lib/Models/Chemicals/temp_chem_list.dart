@@ -64,6 +64,7 @@ class ChemList with ChangeNotifier {
       _chemicalList = _tempChemical;
       notifyListeners();
     } catch (error) {
+      print(error);
       rethrow;
     }
   }

@@ -173,6 +173,27 @@ class _ChemicalListState extends State<ChemicalList> {
     }
   }
 
+  Map userDetails = {'name': '', 'class': '', 'email': ''};
+  void getUserDetails() async {
+    try {
+      userDetails = await Provider.of<Auth>(context, listen: false).userDetails;
+      Map<String, dynamic>.from(userDetails);
+    } catch (error) {
+      showDialog(
+          context: context,
+          builder: (ctx) => AlertDialog(
+                title: const Text('An error Occurred'),
+                content: Text(error.toString()),
+                actions: <Widget>[
+                  TextButton(
+                    onPressed: () => Navigator.of(ctx).pop(),
+                    child: const Text('Okay'),
+                  ),
+                ],
+              ));
+    }
+  }
+
   String lab = '';
   void labDetails() async {
     try {
@@ -197,6 +218,7 @@ class _ChemicalListState extends State<ChemicalList> {
   Widget build(BuildContext context) {
     checkAdmin();
     labDetails();
+    getUserDetails();
     double deviceHeight = MediaQuery.of(context).size.height;
     double deviceWidth = MediaQuery.of(context).size.width;
 
@@ -206,6 +228,15 @@ class _ChemicalListState extends State<ChemicalList> {
       title: const Text('Chemical List'),
       titleSpacing: 0,
       actions: <Widget>[
+        FittedBox(
+          fit: BoxFit.cover,
+          child: TextButton(
+              onPressed: () {},
+              child: Text(
+                userDetails['name'].toString().toUpperCase(),
+                style: const TextStyle(color: Colors.white, fontSize: 16),
+              )),
+        ),
         IconButton(
           onPressed: () {
             Navigator.of(context).pushReplacementNamed('/');

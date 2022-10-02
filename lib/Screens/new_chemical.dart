@@ -77,6 +77,25 @@ class _NewChemicalState extends State<NewChemical> {
     }
 
     _form.currentState!.save();
+
+    if (hazardList.isEmpty) {
+      showDialog(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: const Text('An error Occurred'),
+          content: const Text(
+              'No hazard was given, please enter at least one hazard to continue'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.of(ctx).pop(),
+              child: const Text('Okay'),
+            ),
+          ],
+        ),
+      );
+      return;
+    }
+    _tempChemical.hazard = hazardList;
     setState(() {
       _isLoading = true;
     });
@@ -84,9 +103,11 @@ class _NewChemicalState extends State<NewChemical> {
       try {
         await Provider.of<ChemList>(context, listen: false)
             .addElement(_tempChemical);
-        setState(() {
-          _isLoading = false;
-        });
+        setState(
+          () {
+            _isLoading = false;
+          },
+        );
       } catch (err) {
         (err) {
           showDialog(
@@ -106,8 +127,6 @@ class _NewChemicalState extends State<NewChemical> {
         };
       }
     } else {
-      _tempChemical.hazard = hazardList;
-
       await Provider.of<ChemList>(context, listen: false)
           .updateElement(_tempChemical, _tempChemical.id);
     }
@@ -199,17 +218,18 @@ class _NewChemicalState extends State<NewChemical> {
   void addDropDown(dropDown) {
     if (count > 5) {
       showDialog(
-          context: context,
-          builder: (ctx) => AlertDialog(
-                title: const Text('An error Occurred'),
-                content: const Text('Can not add more than 6 hazard options'),
-                actions: <Widget>[
-                  TextButton(
-                    onPressed: () => Navigator.of(ctx).pop(),
-                    child: const Text('Okay'),
-                  ),
-                ],
-              ));
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: const Text('An error Occurred'),
+          content: const Text('Can not add more than 6 hazard options'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.of(ctx).pop(),
+              child: const Text('Okay'),
+            ),
+          ],
+        ),
+      );
     } else {
       setState(() {
         dropDownWidgetList.add(dropDown);

@@ -187,7 +187,7 @@ class _AuthenticationState extends State<Authentication> {
                                         bottom: 11,
                                         top: 11,
                                         right: 15),
-                                    hintText: 'Enter Email',
+                                    hintText: ' Email',
                                   ),
                                   validator: (String? value) {
                                     if (value == null ||
@@ -244,7 +244,7 @@ class _AuthenticationState extends State<Authentication> {
                                         bottom: 11,
                                         top: 11,
                                         right: 15),
-                                    hintText: 'Enter Password',
+                                    hintText: 'Password',
                                   ),
                                   obscureText: true,
                                   enableSuggestions: false,
@@ -516,7 +516,7 @@ class _AuthenticationState extends State<Authentication> {
                                         bottom: 11,
                                         top: 11,
                                         right: 15),
-                                    hintText: 'Enter Email',
+                                    hintText: 'Email',
                                   ),
                                   validator: (String? value) {
                                     if (value == null ||
@@ -570,7 +570,7 @@ class _AuthenticationState extends State<Authentication> {
                                         bottom: 11,
                                         top: 11,
                                         right: 15),
-                                    hintText: 'Enter Password',
+                                    hintText: 'Password',
                                   ),
                                   obscureText: true,
                                   enableSuggestions: false,

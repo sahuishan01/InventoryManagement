@@ -43,6 +43,18 @@ class Auth with ChangeNotifier {
     }
   }
 
+  Future<Map> get userDetails async {
+    final url = Uri.parse(
+        'https://inventory-db0eb-default-rtdb.asia-southeast1.firebasedatabase.app/users/$_userId.json?auth=$_token');
+    try {
+      final response = await http.get(url);
+      final value = json.decode(response.body);
+      return value;
+    } catch (err) {
+      rethrow;
+    }
+  }
+
   Future<String> get getLab async {
     final url = Uri.parse(
         'https://inventory-db0eb-default-rtdb.asia-southeast1.firebasedatabase.app/users/$_userId.json?auth=$_token');

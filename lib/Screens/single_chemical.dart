@@ -101,9 +101,6 @@ class _SingleChemicalState extends State<SingleChemical> {
       body: Center(
         child: SingleChildScrollView(
           child: SizedBox(
-            height: deviceSize.height -
-                appBar.preferredSize.height -
-                MediaQuery.of(context).viewPadding.top,
             width: deviceSize.width,
             child: Column(
               mainAxisSize: MainAxisSize.max,
