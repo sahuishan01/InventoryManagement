@@ -19,7 +19,8 @@ class ChemicalList extends StatefulWidget {
 
 class _ChemicalListState extends State<ChemicalList> {
   void newChemical(BuildContext ctx) {
-    Navigator.of(ctx).pushNamed(NewChemical.routeName);
+    Navigator.of(ctx)
+        .pushNamed(NewChemical.routeName, arguments: {'lab': lab.trim()});
   }
 
   List<ChemModel> tempList = [];

@@ -67,7 +67,7 @@ class _NewChemicalState extends State<NewChemical> {
     super.dispose();
   }
 
-//lab opertaions
+//lab operations
   String lab = '';
 
   void _saveForm() async {
@@ -143,10 +143,11 @@ class _NewChemicalState extends State<NewChemical> {
   @override
   void didChangeDependencies() {
     if (_isInit) {
-      if (ModalRoute.of(context)!.settings.arguments != null) {
-        final routeArgs = ModalRoute.of(context)!.settings.arguments as Map;
+      final routeArgs = ModalRoute.of(context)!.settings.arguments as Map;
+      lab = routeArgs['lab'];
+      if (routeArgs['id'] != null) {
         final chemicalId = routeArgs['id'];
-        lab = routeArgs['lab'];
+
         _tempChemical =
             Provider.of<ChemList>(context, listen: false).findById(chemicalId);
         _initValues = {
@@ -644,7 +645,7 @@ class _NewChemicalState extends State<NewChemical> {
                         //meltingPoint
                         TextFormField(
                           initialValue: _initValues['meltingPoint'] != 0
-                              ? _initValues['boilingPoint'].toString()
+                              ? _initValues['meltingPoint'].toString()
                               : '',
                           onSaved: (value) => {
                             if (value != null && value.isNotEmpty)
