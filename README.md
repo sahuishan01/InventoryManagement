@@ -16,3 +16,7 @@ For help getting started with Flutter development, view the
 samples, guidance on mobile development, and a full API reference.
 
 # Inventory Management
+
+This is an inventory management for managing different types of chemicals kept in a laboratory. 
+It uses firbase as backend and for authentication purpose.
+Also I have used google-image-to-text library for scanning chemicals name and showing them inside the inventory
